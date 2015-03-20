@@ -41,12 +41,12 @@ public class CheckMarkDrawable extends Drawable {
     private float mProgress;
 
     public CheckMarkDrawable(Context context) {
+        final Resources res = context.getResources();
         mPaint.setAntiAlias(true);
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setColor(Color.WHITE);
-        mStrokeWidth = context.getResources().getDimensionPixelSize(R.dimen.stroke_width);
+        mStrokeWidth = res.getDimensionPixelSize(R.dimen.stroke_width);
         mPaint.setStrokeWidth(mStrokeWidth);
-        final Resources res = context.getResources();
         mLongBarSize = res.getDimensionPixelSize(R.dimen.long_check_mark_bar);
         mShortBarSize = res.getDimensionPixelSize(R.dimen.short_check_mark_bar);
     }
@@ -72,7 +72,7 @@ public class CheckMarkDrawable extends Drawable {
         final float totalSizeDiff = mBounds.height() - (2.2f * mStrokeWidth + mLongBarSize);
 
         canvas.save();
-        canvas.translate(0, totalSizeDiff * 0.22f);
+        canvas.translate(0, totalSizeDiff * 0.225f);
         canvas.translate(mBounds.width() / 2f, mBounds.height() / 2f);
         canvas.rotate(lerp(0, 395, mProgress), 0 , -totalSizeDiff * 0.1f);
         canvas.drawPath(mPath, mPaint);
