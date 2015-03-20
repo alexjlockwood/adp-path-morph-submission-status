@@ -15,7 +15,7 @@ public class MainActivity extends ActionBarActivity {
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                view.start();
+                view.toggle();
             }
         });
     }

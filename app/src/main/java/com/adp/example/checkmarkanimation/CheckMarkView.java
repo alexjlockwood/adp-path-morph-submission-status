@@ -17,9 +17,10 @@ import android.util.Property;
 import android.view.View;
 import android.view.ViewOutlineProvider;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.Checkable;
 import android.widget.FrameLayout;
 
-public class CheckMarkView extends FrameLayout {
+public class CheckMarkView extends FrameLayout implements Checkable {
 
     private static final Property<CheckMarkView, Integer> COLOR =
             new Property<CheckMarkView, Integer>(Integer.class, "color") {
@@ -39,6 +40,8 @@ public class CheckMarkView extends FrameLayout {
     private final CheckMarkDrawable mDrawable;
     private final Paint mPaint = new Paint();
     private final RectF mBounds = new RectF();
+    private final int mExclamationColor;
+    private final int mCheckColor;
     private boolean mIsCheck;
     private int mColor;
 
@@ -50,22 +53,9 @@ public class CheckMarkView extends FrameLayout {
         mPaint.setStyle(Paint.Style.FILL);
         mDrawable = new CheckMarkDrawable(context);
         mDrawable.setCallback(this);
-    }
 
-    public void start() {
-        final int red = getResources().getColor(R.color.red);
-        final int green = getResources().getColor(R.color.green);
-
-        final AnimatorSet set = new AnimatorSet();
-        final ObjectAnimator colorAnim = ObjectAnimator.ofInt(this, COLOR, mIsCheck ? red : green);
-        colorAnim.setEvaluator(new ArgbEvaluator());
-        final Animator checkAnim = mDrawable.getCheckMarkAnimator(!mIsCheck);
-        set.setInterpolator(new DecelerateInterpolator());
-        set.setDuration(CHECK_MARK_ANIMATION_DURATION);
-        set.playTogether(colorAnim, checkAnim);
-        set.start();
-
-        mIsCheck = !mIsCheck;
+        mExclamationColor = getResources().getColor(R.color.red);
+        mCheckColor = getResources().getColor(R.color.green);
     }
 
     @Override
@@ -107,5 +97,35 @@ public class CheckMarkView extends FrameLayout {
         mPaint.setColor(mColor);
         canvas.drawRoundRect(mBounds, cornerRadius, cornerRadius, mPaint);
         mDrawable.draw(canvas);
+    }
+
+    @Override
+    public void setChecked(boolean checked) {
+        if (mIsCheck != checked) {
+            startAnimation();
+        }
+    }
+
+    @Override
+    public boolean isChecked() {
+        return mIsCheck;
+    }
+
+    @Override
+    public void toggle() {
+        startAnimation();
+    }
+
+    private void startAnimation() {
+        final AnimatorSet set = new AnimatorSet();
+        final ObjectAnimator colorAnim = ObjectAnimator.ofInt(this, COLOR, mIsCheck ? mExclamationColor : mCheckColor);
+        colorAnim.setEvaluator(new ArgbEvaluator());
+        final Animator checkAnim = mDrawable.getCheckMarkAnimator(!mIsCheck);
+        set.setInterpolator(new DecelerateInterpolator());
+        set.setDuration(CHECK_MARK_ANIMATION_DURATION);
+        set.playTogether(colorAnim, checkAnim);
+        set.start();
+
+        mIsCheck = !mIsCheck;
     }
 }
