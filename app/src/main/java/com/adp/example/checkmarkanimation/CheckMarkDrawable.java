@@ -2,7 +2,7 @@ package com.adp.example.checkmarkanimation;
 
 
 import android.animation.Animator;
-import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
@@ -12,31 +12,17 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
-import android.util.Property;
 
 public class CheckMarkDrawable extends Drawable {
 
-    private static final Property<CheckMarkDrawable, Float> PROGRESS =
-            new Property<CheckMarkDrawable, Float>(Float.class, "progress") {
-                @Override
-                public Float get(CheckMarkDrawable d) {
-                    return d.getProgress();
-                }
-
-                @Override
-                public void set(CheckMarkDrawable d, Float value) {
-                    d.setProgress(value);
-                }
-            };
-
     private final Path mPath = new Path();
     private final Paint mPaint = new Paint();
-    private final RectF mBounds = new RectF();
     private final float mStrokeWidth;
     private final float mLongBarSize;
     private final float mShortBarSize;
+    private float mWidth;
+    private float mHeight;
 
     private float mProgress;
 
@@ -54,7 +40,8 @@ public class CheckMarkDrawable extends Drawable {
     @Override
     protected void onBoundsChange(Rect bounds) {
         super.onBoundsChange(bounds);
-        mBounds.set(bounds);
+        mWidth = bounds.width();
+        mHeight = bounds.height();
     }
 
     @Override
@@ -69,27 +56,26 @@ public class CheckMarkDrawable extends Drawable {
         mPath.moveTo(0, -mStrokeWidth / 2f);
         mPath.lineTo(-shortBarWidth, -mStrokeWidth / 2f);
 
-        final float totalSizeDiff = mBounds.height() - (2.2f * mStrokeWidth + mLongBarSize);
+        final float totalSizeDiff = mHeight - (2.2f * mStrokeWidth + mLongBarSize);
 
         canvas.save();
         canvas.translate(0, totalSizeDiff * 0.225f);
-        canvas.translate(mBounds.width() / 2f, mBounds.height() / 2f);
+        canvas.translate(mWidth / 2f, mHeight / 2f);
         canvas.rotate(lerp(0, 395, mProgress), 0 , -totalSizeDiff * 0.1f);
         canvas.drawPath(mPath, mPaint);
         canvas.restore();
     }
 
     public Animator getCheckMarkAnimator(boolean toCheck) {
-        return ObjectAnimator.ofFloat(this, CheckMarkDrawable.PROGRESS, toCheck ? 1 : 0);
-    }
-
-    public void setProgress(float progress) {
-        mProgress = progress;
-        invalidateSelf();
-    }
-
-    public float getProgress() {
-        return mProgress;
+        final ValueAnimator anim = ValueAnimator.ofFloat(mProgress, toCheck ? 1 : 0);
+        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                mProgress = (float) animation.getAnimatedValue();
+                invalidateSelf();
+            }
+        });
+        return anim;
     }
 
     @Override
@@ -107,9 +93,7 @@ public class CheckMarkDrawable extends Drawable {
         return PixelFormat.TRANSLUCENT;
     }
 
-    /**
-     * Linear interpolate between a and b with parameter t.
-     */
+    /** Linear interpolate between a and b with parameter t. */
     private static float lerp(float a, float b, float t) {
         return a + (b - a) * t;
     }
