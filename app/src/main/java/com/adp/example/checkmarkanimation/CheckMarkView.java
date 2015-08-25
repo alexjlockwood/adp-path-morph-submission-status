@@ -35,7 +35,7 @@ public class CheckMarkView extends FrameLayout implements Checkable {
                 }
             };
 
-    private static final long CHECK_MARK_ANIMATION_DURATION = 300;
+    private static final long CHECK_MARK_ANIMATION_DURATION = 400;
 
     private final CheckMarkDrawable mDrawable;
     private final Paint mPaint = new Paint();
@@ -90,6 +90,7 @@ public class CheckMarkView extends FrameLayout implements Checkable {
         return who == mDrawable || super.verifyDrawable(who);
     }
 
+
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -116,16 +117,21 @@ public class CheckMarkView extends FrameLayout implements Checkable {
         startAnimation();
     }
 
+    @CheckMarkDrawable.IconType private int currentIconType = CheckMarkDrawable.CHECK;
+
     private void startAnimation() {
         final AnimatorSet set = new AnimatorSet();
         final ObjectAnimator colorAnim = ObjectAnimator.ofInt(this, COLOR, mIsCheck ? mExclamationColor : mCheckColor);
         colorAnim.setEvaluator(new ArgbEvaluator());
-        final Animator checkAnim = mDrawable.getCheckMarkAnimator(!mIsCheck);
+        final int nextIconType = currentIconType == CheckMarkDrawable.CHECK
+                ? CheckMarkDrawable.EXCLAMATION : currentIconType == CheckMarkDrawable.EXCLAMATION
+                ? CheckMarkDrawable.REFRESH : CheckMarkDrawable.CHECK;
+        currentIconType = nextIconType;
+        final Animator checkAnim = mDrawable.getCheckMarkAnimator(nextIconType);
         set.setInterpolator(new DecelerateInterpolator());
         set.setDuration(CHECK_MARK_ANIMATION_DURATION);
         set.playTogether(colorAnim, checkAnim);
         set.start();
-
         mIsCheck = !mIsCheck;
     }
 }
