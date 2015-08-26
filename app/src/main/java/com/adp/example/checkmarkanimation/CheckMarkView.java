@@ -17,10 +17,12 @@ import android.util.Property;
 import android.view.View;
 import android.view.ViewOutlineProvider;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.Checkable;
-import android.widget.FrameLayout;
 
-public class CheckMarkView extends FrameLayout implements Checkable {
+import static com.adp.example.checkmarkanimation.CheckMarkDrawable.CHECK;
+import static com.adp.example.checkmarkanimation.CheckMarkDrawable.EXCLAMATION;
+import static com.adp.example.checkmarkanimation.CheckMarkDrawable.REFRESH;
+
+public class CheckMarkView extends View {
 
     private static final Property<CheckMarkView, Integer> COLOR =
             new Property<CheckMarkView, Integer>(Integer.class, "color") {
@@ -42,12 +44,15 @@ public class CheckMarkView extends FrameLayout implements Checkable {
     private final RectF mBounds = new RectF();
     private final int mExclamationColor;
     private final int mCheckColor;
-    private boolean mIsCheck;
+    private final int mRefreshColor;
     private int mColor;
+
+    // Temp variables...
+    private int[] types = {CHECK, REFRESH, EXCLAMATION, CHECK, EXCLAMATION, REFRESH, EXCLAMATION};
+    private int count = 0;
 
     public CheckMarkView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        setWillNotDraw(false);
         mColor = getResources().getColor(R.color.red);
         mPaint.setAntiAlias(true);
         mPaint.setStyle(Paint.Style.FILL);
@@ -56,6 +61,9 @@ public class CheckMarkView extends FrameLayout implements Checkable {
 
         mExclamationColor = getResources().getColor(R.color.red);
         mCheckColor = getResources().getColor(R.color.green);
+        mRefreshColor = getResources().getColor(R.color.blue);
+
+        mDrawable.setIconType(REFRESH);
     }
 
     @Override
@@ -90,7 +98,6 @@ public class CheckMarkView extends FrameLayout implements Checkable {
         return who == mDrawable || super.verifyDrawable(who);
     }
 
-
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
@@ -100,38 +107,24 @@ public class CheckMarkView extends FrameLayout implements Checkable {
         mDrawable.draw(canvas);
     }
 
-    @Override
-    public void setChecked(boolean checked) {
-        if (mIsCheck != checked) {
-            startAnimation();
-        }
-    }
-
-    @Override
-    public boolean isChecked() {
-        return mIsCheck;
-    }
-
-    @Override
     public void toggle() {
         startAnimation();
     }
 
-    @CheckMarkDrawable.IconType private int currentIconType = CheckMarkDrawable.CHECK;
-
     private void startAnimation() {
+        @CheckMarkDrawable.IconType final int nextIconType = types[count++ % types.length];
         final AnimatorSet set = new AnimatorSet();
-        final ObjectAnimator colorAnim = ObjectAnimator.ofInt(this, COLOR, mIsCheck ? mExclamationColor : mCheckColor);
+        final ObjectAnimator colorAnim = ObjectAnimator.ofInt(this, COLOR,
+                nextIconType == CHECK ? mCheckColor : nextIconType == EXCLAMATION ? mExclamationColor : mRefreshColor);
         colorAnim.setEvaluator(new ArgbEvaluator());
-        final int nextIconType = currentIconType == CheckMarkDrawable.CHECK
-                ? CheckMarkDrawable.EXCLAMATION : currentIconType == CheckMarkDrawable.EXCLAMATION
-                ? CheckMarkDrawable.REFRESH : CheckMarkDrawable.CHECK;
-        currentIconType = nextIconType;
         final Animator checkAnim = mDrawable.getCheckMarkAnimator(nextIconType);
         set.setInterpolator(new DecelerateInterpolator());
         set.setDuration(CHECK_MARK_ANIMATION_DURATION);
         set.playTogether(colorAnim, checkAnim);
         set.start();
-        mIsCheck = !mIsCheck;
+    }
+
+    public void setIconType(@CheckMarkDrawable.IconType int iconType) {
+        mDrawable.setIconType(iconType);
     }
 }

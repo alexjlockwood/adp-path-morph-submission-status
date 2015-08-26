@@ -11,10 +11,8 @@
     <com.adp.example.checkmarkanimation.CheckMarkView
         android:id="@+id/check_mark_view"
         android:layout_centerInParent="true"
-        android:layout_width="300dp"
-        android:foreground="?android:selectableItemBackground"
-        android:layout_height="300dp"
-        android:clickable="true"
-        android:stateListAnimator="@anim/button_elevation"/>
+        android:layout_width="280dp"
+        android:layout_height="280dp"
+        android:clickable="true"/>
 
 </RelativeLayout>
