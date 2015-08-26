@@ -37,7 +37,7 @@ public class CheckMarkView extends View {
                 }
             };
 
-    private static final long CHECK_MARK_ANIMATION_DURATION = 400;
+    private static final long CHECK_MARK_ANIMATION_DURATION = 325;
 
     private final CheckMarkDrawable mDrawable;
     private final Paint mPaint = new Paint();
@@ -46,10 +46,6 @@ public class CheckMarkView extends View {
     private final int mCheckColor;
     private final int mRefreshColor;
     private int mColor;
-
-    // Temp variables...
-    private int[] types = {CHECK, REFRESH, EXCLAMATION, CHECK, EXCLAMATION, REFRESH, EXCLAMATION};
-    private int count = 0;
 
     public CheckMarkView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -107,12 +103,13 @@ public class CheckMarkView extends View {
         mDrawable.draw(canvas);
     }
 
-    public void toggle() {
-        startAnimation();
+    public void animateTo(@CheckMarkDrawable.IconType int iconType) {
+        if (iconType != mDrawable.getCurrIconType()) {
+            startAnimation(iconType);
+        }
     }
 
-    private void startAnimation() {
-        @CheckMarkDrawable.IconType final int nextIconType = types[count++ % types.length];
+    private void startAnimation(@CheckMarkDrawable.IconType int nextIconType) {
         final AnimatorSet set = new AnimatorSet();
         final ObjectAnimator colorAnim = ObjectAnimator.ofInt(this, COLOR,
                 nextIconType == CHECK ? mCheckColor : nextIconType == EXCLAMATION ? mExclamationColor : mRefreshColor);
@@ -125,6 +122,7 @@ public class CheckMarkView extends View {
     }
 
     public void setIconType(@CheckMarkDrawable.IconType int iconType) {
+        setColor(iconType == CHECK ? mCheckColor : iconType == EXCLAMATION ? mExclamationColor : mRefreshColor);
         mDrawable.setIconType(iconType);
     }
 }

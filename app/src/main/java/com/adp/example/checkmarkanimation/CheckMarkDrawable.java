@@ -1,6 +1,5 @@
 package com.adp.example.checkmarkanimation;
 
-
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
@@ -82,29 +81,30 @@ public class CheckMarkDrawable extends Drawable {
         final float h = mDrawBounds.height();
         final float r = w / 2;
         final float dist = calcDistanceFromEndpoint(w / 2);
+        final float exclamationLongBarLength = h - 2.5f * mStrokeWidth;
 
         mEndPoints = new float[][][]{
                 {{0, h / 2}, {w / 2, 0}, {w, h / 2}, {w / 2, h}}, // refresh end points
                 {{w/2-r*cos(35),h/2 - r*sin(35)}, {w/2-r/2*cos(35), h/2-r/2*sin(35)}, {w/2,h/2}, {w/2-r/2*cos(55), h/2+r/2*sin(55)}}, // check end points
-                calcExclamationEndPoints(w, h - 4 * mStrokeWidth), // exclamation end points
+                calcExclamationEndPoints(w, exclamationLongBarLength), // exclamation end points
         };
 
         mControlPoints1 = new float[][][]{
                 {{0, h / 2 - dist}, {w / 2 + dist, 0}, {w, h / 2 + dist}}, // refresh cp1
                 {calcLongCheckBarCp(r * 5 / 6), calcLongCheckBarCp(r * 2 / 6), calcSmallCheckBarCp(r / 6)}, // check cp1
-                calcExclamationCp1(w, h - 4 * mStrokeWidth), // exclamation cp1
+                calcExclamationCp1(w, exclamationLongBarLength), // exclamation cp1
         };
 
         mControlPoints2 = new float[][][]{
                 {{w / 2 - dist, 0}, {w, h / 2 - dist}, {w / 2 + dist, h}}, // refresh cp2
                 {calcLongCheckBarCp(r * 4 / 6), calcLongCheckBarCp(r / 6), calcSmallCheckBarCp(r * 2 / 6)}, // check cp2
-                calcExclamationCp2(w, h - 4 * mStrokeWidth), // exclamation cp2
+                calcExclamationCp2(w, exclamationLongBarLength), // exclamation cp2
         };
 
         final float arrowHeadSize = 4 * mStrokeWidth;
         final float arrowHeadHeight = arrowHeadSize * cos(30);
         final float refreshEndX = mEndPoints[0][0][0];
-        final float refreshEndY = mEndPoints[0][0][1];
+        final float refreshEndY = mEndPoints[0][0][1] - 1; // Subtract one pixel to ensure arrow head and refresh arc connect.
 
         mArrowHeadPoints = new float[][][]{
                 {{refreshEndX, refreshEndY + arrowHeadHeight}, {refreshEndX - arrowHeadSize / 2, refreshEndY}, {refreshEndX + arrowHeadSize / 2, refreshEndY}}, // refresh arrow head points
@@ -112,11 +112,16 @@ public class CheckMarkDrawable extends Drawable {
                 {mEndPoints[2][0], mEndPoints[2][0], mEndPoints[2][0]}, // exclamation arrow head points
         };
 
+        // TODO: add extra padding above and below the exclamation point mark
         mMarkPoints = new float[][][]{
-                {mEndPoints[0][0], mEndPoints[0][0]}, // refresh arrow head points
-                {mEndPoints[1][0], mEndPoints[1][0]}, // check arrow head points
-                {{w/2, h - mStrokeWidth}, {w/2, h}}, // exclamation arrow head points
+                {mEndPoints[0][3], mEndPoints[0][3]}, // refresh mark points
+                {mEndPoints[1][3], mEndPoints[1][3]}, // check mark points
+                {{w/2, h - mStrokeWidth}, {w/2, h}}, // exclamation mark points
         };
+    }
+
+    private static float calcDistanceFromEndpoint(float radius) {
+        return radius * ((float) (Math.sqrt(2) - 1) * 4f / 3f);
     }
 
     private float[][] calcExclamationEndPoints(float w, float h) {
@@ -189,13 +194,13 @@ public class CheckMarkDrawable extends Drawable {
         mArrowHeadPath.moveTo(arrowPoints(0, 0), arrowPoints(0, 1));
         mArrowHeadPath.lineTo(arrowPoints(1, 0), arrowPoints(1, 1));
         mArrowHeadPath.lineTo(arrowPoints(2, 0), arrowPoints(2, 1));
-        mArrowHeadPath.close();
+        mArrowHeadPath.lineTo(arrowPoints(0, 0), arrowPoints(0, 1));
         canvas.drawPath(mArrowHeadPath, mArrowHeadPaint);
 
-//        mMarkPath.rewind();
-//        mMarkPath.moveTo(markPoints(0, 0), markPoints(0, 1));
-//        mMarkPath.lineTo(markPoints(1, 0), markPoints(1, 1));
-//        canvas.drawPath(mMarkPath, mPaint);
+        mMarkPath.rewind();
+        mMarkPath.moveTo(markPoints(0, 0), markPoints(0, 1));
+        mMarkPath.lineTo(markPoints(1, 0), markPoints(1, 1));
+        canvas.drawPath(mMarkPath, mPaint);
 
         canvas.restore();
     }
@@ -217,15 +222,16 @@ public class CheckMarkDrawable extends Drawable {
     }
 
     private float markPoints(int x, int y) {
-        return lerp(mMarkPoints[mPrevIconType][x][y], mArrowHeadPoints[mCurrIconType][x][y], mProgress);
-    }
-
-    private static float calcDistanceFromEndpoint(float radius) {
-        return radius * ((float) (Math.sqrt(2) - 1) * 4f / 3f);
+        return lerp(mMarkPoints[mPrevIconType][x][y], mMarkPoints[mCurrIconType][x][y], mProgress);
     }
 
     private boolean animatingFromCheck;
     private boolean animatingToCheck;
+
+    @IconType
+    public int getCurrIconType() {
+        return mCurrIconType;
+    }
 
     public Animator getCheckMarkAnimator(@IconType final int nextIconType) {
         if (nextIconType == mCurrIconType) {
