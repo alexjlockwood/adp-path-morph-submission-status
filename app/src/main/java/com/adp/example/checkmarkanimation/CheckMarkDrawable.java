@@ -2,8 +2,10 @@ package com.adp.example.checkmarkanimation;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ArgbEvaluator;
+import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
-import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -14,8 +16,10 @@ import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
+import android.support.annotation.ColorInt;
 import android.support.annotation.IntDef;
 import android.support.annotation.Size;
+import android.util.Property;
 import android.view.animation.DecelerateInterpolator;
 
 import java.lang.annotation.Retention;
@@ -30,15 +34,37 @@ public class CheckMarkDrawable extends Drawable {
     public static final int CHECK = 1;
     public static final int EXCLAMATION = 2;
 
+    private static final Property<CheckMarkDrawable, Integer> BACKGROUND_COLOR =
+            new Property<CheckMarkDrawable, Integer>(Integer.class, "backgroundColor") {
+                @Override
+                public Integer get(CheckMarkDrawable v) {
+                    return v.getBackgroundColor();
+                }
+
+                @Override
+                public void set(CheckMarkDrawable v, Integer value) {
+                    v.setBackgroundColor(value);
+                }
+            };
+
+    private static final long CHECK_MARK_ANIMATION_DURATION = 325;
+
     private final Path mPath = new Path();
     private final Path mArrowHeadPath = new Path();
     private final Path mMarkPath = new Path();
+    private final RectF mTotalBounds = new RectF();
     private final RectF mDrawBounds = new RectF();
     private final Paint mPaint = new Paint();
     private final Paint mArrowHeadPaint = new Paint();
+    private final Paint mColorPaint = new Paint();
     private final float mStrokeWidth;
     private float mInset;
     private float mProgress;
+
+    private final int mExclamationColor;
+    private final int mCheckColor;
+    private final int mRefreshColor;
+    private int mBackgroundColor;
 
     @IconType private int mPrevIconType;
     @IconType private int mCurrIconType;
@@ -49,30 +75,45 @@ public class CheckMarkDrawable extends Drawable {
     private float[][][] mArrowHeadPoints;
     private float[][][] mMarkPoints;
 
-    public CheckMarkDrawable(Context context) {
-        final Resources res = context.getResources();
+    private boolean animatingFromCheck;
+    private boolean animatingToCheck;
+
+    public CheckMarkDrawable(Resources res) {
         mPaint.setAntiAlias(true);
         mPaint.setStyle(Paint.Style.STROKE);
         mPaint.setColor(Color.WHITE);
         mArrowHeadPaint.setAntiAlias(true);
         mArrowHeadPaint.setStyle(Paint.Style.FILL);
         mArrowHeadPaint.setColor(Color.WHITE);
+        mColorPaint.setAntiAlias(true);
+        mColorPaint.setStyle(Paint.Style.FILL);
         mStrokeWidth = res.getDimensionPixelSize(R.dimen.stroke_width);
         mPaint.setStrokeWidth(mStrokeWidth);
         mCurrIconType = REFRESH;
         mPrevIconType = REFRESH;
+        mExclamationColor = res.getColor(R.color.red);
+        mCheckColor = res.getColor(R.color.green);
+        mRefreshColor = res.getColor(R.color.blue);
+        mBackgroundColor = mRefreshColor;
+    }
+
+    @IconType
+    public int getIconType() {
+        return mCurrIconType;
     }
 
     public void setIconType(@IconType int iconType) {
         mPrevIconType = mCurrIconType;
         mCurrIconType = iconType;
         mProgress = 1;
+        setBackgroundColor(iconType == CHECK ? mCheckColor : iconType == EXCLAMATION ? mExclamationColor : mRefreshColor);
         invalidateSelf();
     }
 
     @Override
     protected void onBoundsChange(Rect bounds) {
         super.onBoundsChange(bounds);
+        mTotalBounds.set(bounds);
 
         mInset = 5 * mStrokeWidth;
         mDrawBounds.set(0, 0, bounds.width() - 2 * mInset, bounds.height() - 2 * mInset);
@@ -168,6 +209,10 @@ public class CheckMarkDrawable extends Drawable {
         final float h = mDrawBounds.height();
         final float r = w / 2;
 
+        mColorPaint.setColor(mBackgroundColor);
+        final float cornerRadius = mTotalBounds.width() / 2f;
+        canvas.drawRoundRect(mTotalBounds, cornerRadius, cornerRadius, mColorPaint);
+
         canvas.save();
         canvas.translate(mInset, mInset);
         if (animatingToCheck || animatingFromCheck) {
@@ -225,15 +270,7 @@ public class CheckMarkDrawable extends Drawable {
         return lerp(mMarkPoints[mPrevIconType][x][y], mMarkPoints[mCurrIconType][x][y], mProgress);
     }
 
-    private boolean animatingFromCheck;
-    private boolean animatingToCheck;
-
-    @IconType
-    public int getCurrIconType() {
-        return mCurrIconType;
-    }
-
-    public Animator getCheckMarkAnimator(@IconType final int nextIconType) {
+    private Animator getCheckMarkAnimator(@IconType final int nextIconType) {
         if (nextIconType == mCurrIconType) {
             throw new RuntimeException();
         }
@@ -256,16 +293,42 @@ public class CheckMarkDrawable extends Drawable {
             }
         });
         anim.setInterpolator(new DecelerateInterpolator());
-        return anim;
+
+        final AnimatorSet set = new AnimatorSet();
+        final ObjectAnimator colorAnim = ObjectAnimator.ofInt(this, BACKGROUND_COLOR,
+                nextIconType == CHECK ? mCheckColor : nextIconType == EXCLAMATION ? mExclamationColor : mRefreshColor);
+        colorAnim.setEvaluator(new ArgbEvaluator());
+        set.setInterpolator(new DecelerateInterpolator());
+        set.setDuration(CHECK_MARK_ANIMATION_DURATION);
+        set.playTogether(colorAnim, anim);
+        return set;
+    }
+
+    private void setBackgroundColor(@ColorInt int color) {
+        mBackgroundColor = color;
+        invalidateSelf();
+    }
+
+    @ColorInt
+    private int getBackgroundColor() {
+        return mBackgroundColor;
+    }
+
+    public void animateTo(@IconType int iconType) {
+        if (iconType != mCurrIconType) {
+            getCheckMarkAnimator(iconType).start();
+        }
     }
 
     @Override
     public void setAlpha(int alpha) {
+        // TODO: set alpha on other stuff too?
         mPaint.setAlpha(alpha);
     }
 
     @Override
     public void setColorFilter(ColorFilter cf) {
+        // TODO: set color filter on other stuff too?
         mPaint.setColorFilter(cf);
     }
 

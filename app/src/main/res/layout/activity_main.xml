@@ -11,17 +11,15 @@
     tools:context=".MainActivity">
 
     <RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <com.adp.example.checkmarkanimation.CheckMarkView
+        <View
             android:id="@+id/check_mark_view"
             android:layout_width="250dp"
             android:layout_height="250dp"
-            android:layout_centerInParent="true"
-            android:clickable="true"/>
+            android:layout_centerInParent="true"/>
 
     </RelativeLayout>
 
