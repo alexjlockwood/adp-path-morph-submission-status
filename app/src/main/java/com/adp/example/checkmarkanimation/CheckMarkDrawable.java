@@ -54,9 +54,7 @@ public class CheckMarkDrawable extends Drawable {
     private final Path mMarkPath = new Path();
     private final RectF mTotalBounds = new RectF();
     private final RectF mDrawBounds = new RectF();
-    private final Paint mPaint = new Paint();
-    private final Paint mArrowHeadPaint = new Paint();
-    private final Paint mColorPaint = new Paint();
+    private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final float mStrokeWidth;
     private float mInset;
     private float mProgress;
@@ -79,22 +77,12 @@ public class CheckMarkDrawable extends Drawable {
     private boolean animatingToCheck;
 
     public CheckMarkDrawable(Resources res) {
-        mPaint.setAntiAlias(true);
-        mPaint.setStyle(Paint.Style.STROKE);
-        mPaint.setColor(Color.WHITE);
-        mArrowHeadPaint.setAntiAlias(true);
-        mArrowHeadPaint.setStyle(Paint.Style.FILL);
-        mArrowHeadPaint.setColor(Color.WHITE);
-        mColorPaint.setAntiAlias(true);
-        mColorPaint.setStyle(Paint.Style.FILL);
-        mStrokeWidth = res.getDimensionPixelSize(R.dimen.stroke_width);
-        mPaint.setStrokeWidth(mStrokeWidth);
-        mCurrIconType = REFRESH;
-        mPrevIconType = REFRESH;
         mExclamationColor = res.getColor(R.color.red);
         mCheckColor = res.getColor(R.color.green);
         mRefreshColor = res.getColor(R.color.blue);
-        mBackgroundColor = mRefreshColor;
+        mStrokeWidth = res.getDimensionPixelSize(R.dimen.stroke_width);
+        mPaint.setStrokeWidth(mStrokeWidth);
+        setIconType(REFRESH);
     }
 
     @IconType
@@ -103,9 +91,8 @@ public class CheckMarkDrawable extends Drawable {
     }
 
     public void setIconType(@IconType int iconType) {
-        mPrevIconType = mCurrIconType;
-        mCurrIconType = iconType;
-        mProgress = 1;
+        mCurrIconType = mPrevIconType = iconType;
+        mProgress = 1f;
         setBackgroundColor(iconType == CHECK ? mCheckColor : iconType == EXCLAMATION ? mExclamationColor : mRefreshColor);
         invalidateSelf();
     }
@@ -154,10 +141,11 @@ public class CheckMarkDrawable extends Drawable {
         };
 
         // TODO: add extra padding above and below the exclamation point mark
+        // TODO: figure out nicer way to animate in/out the exclamation point mark?
         mMarkPoints = new float[][][]{
-                {mEndPoints[0][3], mEndPoints[0][3]}, // refresh mark points
-                {mEndPoints[1][3], mEndPoints[1][3]}, // check mark points
-                {{w/2, h - mStrokeWidth}, {w/2, h}}, // exclamation mark points
+                {mEndPoints[0][3], mEndPoints[0][3], mEndPoints[0][3], mEndPoints[0][3]}, // refresh mark points
+                {mEndPoints[1][3], mEndPoints[1][3], mEndPoints[1][3], mEndPoints[1][3]}, // check mark points
+                {{w/2 - mStrokeWidth / 2, h - mStrokeWidth}, {w/2 + mStrokeWidth / 2, h - mStrokeWidth}, {w/2 + mStrokeWidth / 2, h}, {w/2 - mStrokeWidth / 2, h}}, // exclamation mark points
         };
     }
 
@@ -209,9 +197,10 @@ public class CheckMarkDrawable extends Drawable {
         final float h = mDrawBounds.height();
         final float r = w / 2;
 
-        mColorPaint.setColor(mBackgroundColor);
+        mPaint.setStyle(Paint.Style.FILL);
+        mPaint.setColor(mBackgroundColor);
         final float cornerRadius = mTotalBounds.width() / 2f;
-        canvas.drawRoundRect(mTotalBounds, cornerRadius, cornerRadius, mColorPaint);
+        canvas.drawRoundRect(mTotalBounds, cornerRadius, cornerRadius, mPaint);
 
         canvas.save();
         canvas.translate(mInset, mInset);
@@ -233,19 +222,25 @@ public class CheckMarkDrawable extends Drawable {
         mPath.cubicTo(cp1(0, 0), cp1(0, 1), cp2(0, 0), cp2(0, 1), end(1, 0), end(1, 1));
         mPath.cubicTo(cp1(1, 0), cp1(1, 1), cp2(1, 0), cp2(1, 1), end(2, 0), end(2, 1));
         mPath.cubicTo(cp1(2, 0), cp1(2, 1), cp2(2, 0), cp2(2, 1), end(3, 0), end(3, 1));
-        canvas.drawPath(mPath, mPaint);
 
         mArrowHeadPath.rewind();
         mArrowHeadPath.moveTo(arrowPoints(0, 0), arrowPoints(0, 1));
         mArrowHeadPath.lineTo(arrowPoints(1, 0), arrowPoints(1, 1));
         mArrowHeadPath.lineTo(arrowPoints(2, 0), arrowPoints(2, 1));
         mArrowHeadPath.lineTo(arrowPoints(0, 0), arrowPoints(0, 1));
-        canvas.drawPath(mArrowHeadPath, mArrowHeadPaint);
 
         mMarkPath.rewind();
         mMarkPath.moveTo(markPoints(0, 0), markPoints(0, 1));
         mMarkPath.lineTo(markPoints(1, 0), markPoints(1, 1));
+        mMarkPath.lineTo(markPoints(2, 0), markPoints(2, 1));
+        mMarkPath.lineTo(markPoints(3, 0), markPoints(3, 1));
+        mMarkPath.lineTo(markPoints(0, 0), markPoints(0, 1));
+
+        mPaint.setColor(Color.WHITE);
+        canvas.drawPath(mArrowHeadPath, mPaint);
         canvas.drawPath(mMarkPath, mPaint);
+        mPaint.setStyle(Paint.Style.STROKE);
+        canvas.drawPath(mPath, mPaint);
 
         canvas.restore();
     }
