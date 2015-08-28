@@ -1,7 +1,5 @@
 package com.adp.example.checkmarkanimation;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ArgbEvaluator;
 import android.animation.ObjectAnimator;
@@ -51,7 +49,7 @@ public class CheckMarkDrawable extends Drawable {
 
     private final Path mPath = new Path();
     private final Path mArrowHeadPath = new Path();
-    private final Path mMarkPath = new Path();
+    private final Path mExclamationDotPath = new Path();
     private final RectF mTotalBounds = new RectF();
     private final RectF mDrawBounds = new RectF();
     private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -71,10 +69,10 @@ public class CheckMarkDrawable extends Drawable {
     private float[][][] mControlPoints1;
     private float[][][] mControlPoints2;
     private float[][][] mArrowHeadPoints;
-    private float[][][] mMarkPoints;
+    private float[][][] mExclamationDotPoints;
 
-    private boolean animatingFromCheck;
-    private boolean animatingToCheck;
+    private boolean mAnimatingFromCheck;
+    private boolean mAnimatingToCheck;
 
     public CheckMarkDrawable(Resources res) {
         mExclamationColor = res.getColor(R.color.red);
@@ -142,53 +140,50 @@ public class CheckMarkDrawable extends Drawable {
 
         // TODO: add extra padding above and below the exclamation point mark
         // TODO: figure out nicer way to animate in/out the exclamation point mark?
-        mMarkPoints = new float[][][]{
+        final float sw = mStrokeWidth;
+        mExclamationDotPoints = new float[][][]{
                 {mEndPoints[0][3], mEndPoints[0][3], mEndPoints[0][3], mEndPoints[0][3]}, // refresh mark points
                 {mEndPoints[1][3], mEndPoints[1][3], mEndPoints[1][3], mEndPoints[1][3]}, // check mark points
-                {{w/2 - mStrokeWidth / 2, h - mStrokeWidth}, {w/2 + mStrokeWidth / 2, h - mStrokeWidth}, {w/2 + mStrokeWidth / 2, h}, {w/2 - mStrokeWidth / 2, h}}, // exclamation mark points
+                {{w/2 - sw / 2, h - sw}, {w/2 + sw / 2, h - sw}, {w/2 + sw / 2, h}, {w/2 - sw / 2, h}}, // exclamation mark points
         };
     }
 
     private static float calcDistanceFromEndpoint(float radius) {
-        return radius * ((float) (Math.sqrt(2) - 1) * 4f / 3f);
+        return radius * ((float) Math.sqrt(2) - 1) * 4 / 3;
     }
 
     private float[][] calcExclamationEndPoints(float w, float h) {
-        return new float[][] {
-                {w/2,0}, {w/2,h/3}, {w/2,2*h/3}, {w/2,h},
+        return new float[][]{
+                {w / 2, 0}, {w / 2, h / 3}, {w / 2, 2 * h / 3}, {w / 2, h},
         };
     }
 
     private float[][] calcExclamationCp1(float w, float h) {
-        return new float[][] {
-                {w/2,h/9}, {w/2,4*h/9}, {w/2,7*h/9},
+        return new float[][]{
+                {w / 2, h / 9}, {w / 2, 4 * h / 9}, {w / 2, 7 * h / 9},
         };
     }
 
     private float[][] calcExclamationCp2(float w, float h) {
-        return new float[][] {
-                {w/2,2*h/9}, {w/2,5*h/9}, {w/2,8*h/9},
+        return new float[][]{
+                {w / 2, 2 * h / 9}, {w / 2, 5 * h / 9}, {w / 2, 8 * h / 9},
         };
     }
 
     @Size(2)
     private float[] calcLongCheckBarCp(float r) {
-        final float w = mDrawBounds.width();
-        final float h = mDrawBounds.height();
-        float[] out = new float[2];
-        out[0] = w / 2 - r * cos(35);
-        out[1] = h / 2 - r * sin(35);
-        return out;
+        return new float[]{
+                mDrawBounds.width() / 2 - r * cos(35),
+                mDrawBounds.height() / 2 - r * sin(35),
+        };
     }
 
     @Size(2)
     private float[] calcSmallCheckBarCp(float r) {
-        final float w = mDrawBounds.width();
-        final float h = mDrawBounds.height();
-        float[] out = new float[2];
-        out[0] = w / 2 - r * cos(55);
-        out[1] = h / 2 + r * sin(55);
-        return out;
+        return new float[]{
+                mDrawBounds.width() / 2 - r * cos(55),
+                mDrawBounds.height() / 2 + r * sin(55),
+        };
     }
 
     @Override
@@ -204,11 +199,11 @@ public class CheckMarkDrawable extends Drawable {
 
         canvas.save();
         canvas.translate(mInset, mInset);
-        if (animatingToCheck || animatingFromCheck) {
-            final float progress = animatingToCheck ? mProgress : 1 - mProgress;
+        if (mAnimatingToCheck || mAnimatingFromCheck) {
+            final float progress = mAnimatingToCheck ? mProgress : 1 - mProgress;
             canvas.translate(lerp(0, -(r / 2 * cos(55) - r / 4 * cos(35)), progress), 0); // center the check horizontally
             canvas.translate(0, lerp(0, r / 2 * cos(55), progress)); // center the check vertically
-            if (animatingToCheck) {
+            if (mAnimatingToCheck) {
                 canvas.rotate(lerp(0, -270, mProgress), w / 2, h / 2);
             } else {
                 canvas.rotate(lerp(90, -360, mProgress), w / 2, h / 2);
@@ -218,68 +213,74 @@ public class CheckMarkDrawable extends Drawable {
         }
 
         mPath.rewind();
-        mPath.moveTo(end(0, 0), end(0, 1));
-        mPath.cubicTo(cp1(0, 0), cp1(0, 1), cp2(0, 0), cp2(0, 1), end(1, 0), end(1, 1));
-        mPath.cubicTo(cp1(1, 0), cp1(1, 1), cp2(1, 0), cp2(1, 1), end(2, 0), end(2, 1));
-        mPath.cubicTo(cp1(2, 0), cp1(2, 1), cp2(2, 0), cp2(2, 1), end(3, 0), end(3, 1));
+        mPath.moveTo(endPoint(0, 0), endPoint(0, 1));
+        mPath.cubicTo(cp1(0, 0), cp1(0, 1), cp2(0, 0), cp2(0, 1), endPoint(1, 0), endPoint(1, 1));
+        mPath.cubicTo(cp1(1, 0), cp1(1, 1), cp2(1, 0), cp2(1, 1), endPoint(2, 0), endPoint(2, 1));
+        mPath.cubicTo(cp1(2, 0), cp1(2, 1), cp2(2, 0), cp2(2, 1), endPoint(3, 0), endPoint(3, 1));
 
         mArrowHeadPath.rewind();
-        mArrowHeadPath.moveTo(arrowPoints(0, 0), arrowPoints(0, 1));
-        mArrowHeadPath.lineTo(arrowPoints(1, 0), arrowPoints(1, 1));
-        mArrowHeadPath.lineTo(arrowPoints(2, 0), arrowPoints(2, 1));
-        mArrowHeadPath.lineTo(arrowPoints(0, 0), arrowPoints(0, 1));
+        mArrowHeadPath.moveTo(arrowHeadPoint(0, 0), arrowHeadPoint(0, 1));
+        mArrowHeadPath.lineTo(arrowHeadPoint(1, 0), arrowHeadPoint(1, 1));
+        mArrowHeadPath.lineTo(arrowHeadPoint(2, 0), arrowHeadPoint(2, 1));
+        mArrowHeadPath.lineTo(arrowHeadPoint(0, 0), arrowHeadPoint(0, 1));
 
-        mMarkPath.rewind();
-        mMarkPath.moveTo(markPoints(0, 0), markPoints(0, 1));
-        mMarkPath.lineTo(markPoints(1, 0), markPoints(1, 1));
-        mMarkPath.lineTo(markPoints(2, 0), markPoints(2, 1));
-        mMarkPath.lineTo(markPoints(3, 0), markPoints(3, 1));
-        mMarkPath.lineTo(markPoints(0, 0), markPoints(0, 1));
+        mExclamationDotPath.rewind();
+        mExclamationDotPath.moveTo(exclamationDotPoint(0, 0), exclamationDotPoint(0, 1));
+        mExclamationDotPath.lineTo(exclamationDotPoint(1, 0), exclamationDotPoint(1, 1));
+        mExclamationDotPath.lineTo(exclamationDotPoint(2, 0), exclamationDotPoint(2, 1));
+        mExclamationDotPath.lineTo(exclamationDotPoint(3, 0), exclamationDotPoint(3, 1));
+        mExclamationDotPath.lineTo(exclamationDotPoint(0, 0), exclamationDotPoint(0, 1));
 
         mPaint.setColor(Color.WHITE);
         canvas.drawPath(mArrowHeadPath, mPaint);
-        canvas.drawPath(mMarkPath, mPaint);
+        canvas.drawPath(mExclamationDotPath, mPaint);
         mPaint.setStyle(Paint.Style.STROKE);
         canvas.drawPath(mPath, mPaint);
 
         canvas.restore();
     }
 
-    private float end(int x, int y) {
-        return lerp(mEndPoints[mPrevIconType][x][y], mEndPoints[mCurrIconType][x][y], mProgress);
+    private float cp1(int pos, int xy) {
+        return lerpPoint(mControlPoints1, pos, xy);
     }
 
-    private float cp1(int x, int y) {
-        return lerp(mControlPoints1[mPrevIconType][x][y], mControlPoints1[mCurrIconType][x][y], mProgress);
+    private float cp2(int pos, int xy) {
+        return lerpPoint(mControlPoints2, pos, xy);
     }
 
-    private float cp2(int x, int y) {
-        return lerp(mControlPoints2[mPrevIconType][x][y], mControlPoints2[mCurrIconType][x][y], mProgress);
+    private float endPoint(int pos, int xy) {
+        return lerpPoint(mEndPoints, pos, xy);
     }
 
-    private float arrowPoints(int x, int y) {
-        return lerp(mArrowHeadPoints[mPrevIconType][x][y], mArrowHeadPoints[mCurrIconType][x][y], mProgress);
+    private float arrowHeadPoint(int pos, int xy) {
+        return lerpPoint(mArrowHeadPoints, pos, xy);
     }
 
-    private float markPoints(int x, int y) {
-        return lerp(mMarkPoints[mPrevIconType][x][y], mMarkPoints[mCurrIconType][x][y], mProgress);
+    private float exclamationDotPoint(int pos, int xy) {
+        return lerpPoint(mExclamationDotPoints, pos, xy);
     }
 
-    private Animator getCheckMarkAnimator(@IconType final int nextIconType) {
+    private float lerpPoint(float[][][] points, int pos, int xy) {
+        return lerp(points[mPrevIconType][pos][xy], points[mCurrIconType][pos][xy], mProgress);
+    }
+
+    public void animateTo(@IconType int iconType) {
+        if (iconType != mCurrIconType) {
+            startAnimation(iconType);
+        }
+    }
+
+    private void startAnimation(@IconType final int nextIconType) {
         if (nextIconType == mCurrIconType) {
-            throw new RuntimeException();
+            return;
         }
 
+        mAnimatingFromCheck = mCurrIconType == CHECK;
+        mAnimatingToCheck = nextIconType == CHECK;
+        mPrevIconType = mCurrIconType;
+        mCurrIconType = nextIconType;
+
         final ValueAnimator anim = ValueAnimator.ofFloat(0, 1);
-        anim.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                animatingFromCheck = mCurrIconType == CHECK;
-                animatingToCheck = nextIconType == CHECK;
-                mPrevIconType = mCurrIconType;
-                mCurrIconType = nextIconType;
-            }
-        });
         anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
@@ -289,14 +290,15 @@ public class CheckMarkDrawable extends Drawable {
         });
         anim.setInterpolator(new DecelerateInterpolator());
 
-        final AnimatorSet set = new AnimatorSet();
         final ObjectAnimator colorAnim = ObjectAnimator.ofInt(this, BACKGROUND_COLOR,
                 nextIconType == CHECK ? mCheckColor : nextIconType == EXCLAMATION ? mExclamationColor : mRefreshColor);
         colorAnim.setEvaluator(new ArgbEvaluator());
-        set.setInterpolator(new DecelerateInterpolator());
+        colorAnim.setInterpolator(new DecelerateInterpolator());
+
+        final AnimatorSet set = new AnimatorSet();
         set.setDuration(CHECK_MARK_ANIMATION_DURATION);
         set.playTogether(colorAnim, anim);
-        return set;
+        set.start();
     }
 
     private void setBackgroundColor(@ColorInt int color) {
@@ -309,21 +311,14 @@ public class CheckMarkDrawable extends Drawable {
         return mBackgroundColor;
     }
 
-    public void animateTo(@IconType int iconType) {
-        if (iconType != mCurrIconType) {
-            getCheckMarkAnimator(iconType).start();
-        }
-    }
 
     @Override
     public void setAlpha(int alpha) {
-        // TODO: set alpha on other stuff too?
         mPaint.setAlpha(alpha);
     }
 
     @Override
     public void setColorFilter(ColorFilter cf) {
-        // TODO: set color filter on other stuff too?
         mPaint.setColorFilter(cf);
     }
 

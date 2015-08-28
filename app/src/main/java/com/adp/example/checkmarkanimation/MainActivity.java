@@ -1,7 +1,9 @@
 package com.adp.example.checkmarkanimation;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Button;
 
@@ -39,4 +41,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
     }
+
+    public static class SquareView extends View {
+
+        public SquareView(Context context, AttributeSet attrs) {
+            super(context, attrs);
+        }
+
+        @Override
+        protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+            final int size = Math.min(getMeasuredWidth(), getMeasuredHeight());
+            setMeasuredDimension(size, size);
+        }
+    }
+
 }
