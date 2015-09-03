@@ -24,6 +24,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 public class CheckMarkDrawable extends Drawable {
+    private static final boolean DEBUG = true;
 
     @Retention(RetentionPolicy.SOURCE)
     @IntDef({CHECK, EXCLAMATION, REFRESH})
@@ -53,6 +54,7 @@ public class CheckMarkDrawable extends Drawable {
     private final RectF mTotalBounds = new RectF();
     private final RectF mDrawBounds = new RectF();
     private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint mDebugPaint;
     private final float mStrokeWidth;
     private float mInset;
     private float mProgress;
@@ -80,6 +82,12 @@ public class CheckMarkDrawable extends Drawable {
         mRefreshColor = res.getColor(R.color.blue);
         mStrokeWidth = res.getDimensionPixelSize(R.dimen.stroke_width);
         mPaint.setStrokeWidth(mStrokeWidth);
+        if (DEBUG) {
+            mDebugPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+            mDebugPaint.setStyle(Paint.Style.STROKE);
+            mDebugPaint.setStrokeWidth(2f);
+            mDebugPaint.setColor(Color.BLACK);
+        }
         setIconType(REFRESH);
     }
 
@@ -100,31 +108,34 @@ public class CheckMarkDrawable extends Drawable {
         super.onBoundsChange(bounds);
         mTotalBounds.set(bounds);
 
-        mInset = 5 * mStrokeWidth;
+        final float totalWidth = mTotalBounds.width();
+        final float totalRadius = totalWidth / 2;
+        mInset = (totalWidth - sqrt(2 * totalRadius * totalRadius)) / 2;
         mDrawBounds.set(0, 0, bounds.width() - 2 * mInset, bounds.height() - 2 * mInset);
 
         final float w = mDrawBounds.width();
         final float h = mDrawBounds.height();
         final float r = w / 2;
         final float dist = calcDistanceFromEndpoint(w / 2);
-        final float exclamationLongBarLength = h - 2.5f * mStrokeWidth;
+        final float exclamationPadding = h / 6;
+        final float exclamationLongBarLength = h - 2.5f * mStrokeWidth - 2 * exclamationPadding;
 
         mEndPoints = new float[][][]{
                 {{0, h / 2}, {w / 2, 0}, {w, h / 2}, {w / 2, h}}, // refresh end points
                 {{w/2-r*cos(35),h/2 - r*sin(35)}, {w/2-r/2*cos(35), h/2-r/2*sin(35)}, {w/2,h/2}, {w/2-r/2*cos(55), h/2+r/2*sin(55)}}, // check end points
-                calcExclamationEndPoints(w, exclamationLongBarLength), // exclamation end points
+                calcExclamationEndPoints(w / 2, exclamationLongBarLength, exclamationPadding), // exclamation end points
         };
 
         mControlPoints1 = new float[][][]{
                 {{0, h / 2 - dist}, {w / 2 + dist, 0}, {w, h / 2 + dist}}, // refresh cp1
                 {calcLongCheckBarCp(r * 5 / 6), calcLongCheckBarCp(r * 2 / 6), calcSmallCheckBarCp(r / 6)}, // check cp1
-                calcExclamationCp1(w, exclamationLongBarLength), // exclamation cp1
+                calcExclamationCp1(w / 2, exclamationLongBarLength, exclamationPadding), // exclamation cp1
         };
 
         mControlPoints2 = new float[][][]{
                 {{w / 2 - dist, 0}, {w, h / 2 - dist}, {w / 2 + dist, h}}, // refresh cp2
                 {calcLongCheckBarCp(r * 4 / 6), calcLongCheckBarCp(r / 6), calcSmallCheckBarCp(r * 2 / 6)}, // check cp2
-                calcExclamationCp2(w, exclamationLongBarLength), // exclamation cp2
+                calcExclamationCp2(w / 2, exclamationLongBarLength, exclamationPadding), // exclamation cp2
         };
 
         final float arrowHeadSize = 4 * mStrokeWidth;
@@ -141,32 +152,39 @@ public class CheckMarkDrawable extends Drawable {
         // TODO: add extra padding above and below the exclamation point mark
         // TODO: figure out nicer way to animate in/out the exclamation point mark?
         final float sw = mStrokeWidth;
+        final float o = exclamationPadding;
         mExclamationDotPoints = new float[][][]{
                 {mEndPoints[0][3], mEndPoints[0][3], mEndPoints[0][3], mEndPoints[0][3]}, // refresh mark points
                 {mEndPoints[1][3], mEndPoints[1][3], mEndPoints[1][3], mEndPoints[1][3]}, // check mark points
-                {{w/2 - sw / 2, h - sw}, {w/2 + sw / 2, h - sw}, {w/2 + sw / 2, h}, {w/2 - sw / 2, h}}, // exclamation mark points
+                {{w/2 - sw / 2, h - sw - o}, {w/2 + sw / 2, h - sw - o}, {w/2 + sw / 2, h - o}, {w/2 - sw / 2, h - o}}, // exclamation mark points
         };
     }
 
     private static float calcDistanceFromEndpoint(float radius) {
-        return radius * ((float) Math.sqrt(2) - 1) * 4 / 3;
+        return radius * (sqrt(2) - 1) * 4 / 3;
     }
 
-    private float[][] calcExclamationEndPoints(float w, float h) {
+    @Size(4)
+    private static float[][] calcExclamationEndPoints(float x, float h, float offset) {
+        final float o = offset;
         return new float[][]{
-                {w / 2, 0}, {w / 2, h / 3}, {w / 2, 2 * h / 3}, {w / 2, h},
+                {x, o}, {x, o + h / 3}, {x, o + 2 * h / 3}, {x, o + h},
         };
     }
 
-    private float[][] calcExclamationCp1(float w, float h) {
+    @Size(3)
+    private static float[][] calcExclamationCp1(float x, float h, float offset) {
+        final float o = offset;
         return new float[][]{
-                {w / 2, h / 9}, {w / 2, 4 * h / 9}, {w / 2, 7 * h / 9},
+                {x,  o + h / 9}, {x,  o + 4 * h / 9}, {x,  o + 7 * h / 9},
         };
     }
 
-    private float[][] calcExclamationCp2(float w, float h) {
+    @Size(3)
+    private static float[][] calcExclamationCp2(float x, float h, float offset) {
+        final float o = offset;
         return new float[][]{
-                {w / 2, 2 * h / 9}, {w / 2, 5 * h / 9}, {w / 2, 8 * h / 9},
+                {x, o + 2 * h / 9}, {x,  o + 5 * h / 9}, {x,  o + 8 * h / 9},
         };
     }
 
@@ -236,6 +254,10 @@ public class CheckMarkDrawable extends Drawable {
         canvas.drawPath(mExclamationDotPath, mPaint);
         mPaint.setStyle(Paint.Style.STROKE);
         canvas.drawPath(mPath, mPaint);
+
+        if (DEBUG) {
+            canvas.drawRect(mDrawBounds, mDebugPaint);
+        }
 
         canvas.restore();
     }
@@ -338,5 +360,9 @@ public class CheckMarkDrawable extends Drawable {
 
     private static float sin(float degrees) {
         return (float) Math.sin(Math.toRadians(degrees));
+    }
+
+    private static float sqrt(float value) {
+        return (float) Math.sqrt(value);
     }
 }
