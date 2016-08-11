@@ -8,6 +8,15 @@ import android.view.View;
 import android.widget.Button;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+  private static final String STATE_DEBUG_ROTATION = "state_debug_rotation";
+  private static final String STATE_DEBUG_CPS = "state_debug_cps";
+  private static final String STATE_DEBUG_BOUNDS = "state_debug_bounds";
+  private static final String STATE_DEBUG_SLOW_ANIMATION = "state_debug_slow_animation;";
+
+  private boolean mDebugRotation = true;
+  private boolean mDebugCps;
+  private boolean mDebugBounds;
+  private boolean mDebugAnimation;
 
   private BezierDrawable mBezierDrawable;
 
@@ -30,6 +39,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     final Button refresh = (Button) findViewById(R.id.refresh);
     refresh.setOnClickListener(this);
+
+    if (savedInstanceState != null) {
+      mDebugRotation = savedInstanceState.getBoolean(STATE_DEBUG_ROTATION);
+      mDebugCps = savedInstanceState.getBoolean(STATE_DEBUG_CPS);
+      mDebugBounds = savedInstanceState.getBoolean(STATE_DEBUG_BOUNDS);
+      mDebugAnimation = savedInstanceState.getBoolean(STATE_DEBUG_SLOW_ANIMATION);
+    }
+
+    mBezierDrawable.setDebugEnableRotation(mDebugRotation);
+    mBezierDrawable.setDebugShowControlPoints(mDebugCps);
+    mBezierDrawable.setDebugShowBounds(mDebugBounds);
+    mBezierDrawable.setDebugSlowDownAnimation(mDebugAnimation);
+  }
+
+  @Override
+  protected void onSaveInstanceState(Bundle outState) {
+    super.onSaveInstanceState(outState);
+    outState.putBoolean(STATE_DEBUG_ROTATION, mDebugRotation);
+    outState.putBoolean(STATE_DEBUG_CPS, mDebugCps);
+    outState.putBoolean(STATE_DEBUG_BOUNDS, mDebugBounds);
+    outState.putBoolean(STATE_DEBUG_SLOW_ANIMATION, mDebugAnimation);
   }
 
   @Override
@@ -39,25 +69,39 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
   }
 
   @Override
+  public boolean onPrepareOptionsMenu(Menu menu) {
+    menu.findItem(R.id.action_enable_rotation).setChecked(mDebugRotation);
+    menu.findItem(R.id.action_show_control_points).setChecked(mDebugCps);
+    menu.findItem(R.id.action_show_bounds).setChecked(mDebugBounds);
+    menu.findItem(R.id.action_show_bounds).setVisible(false);
+    menu.findItem(R.id.action_slow_down_animation).setChecked(mDebugAnimation);
+    return super.onPrepareOptionsMenu(menu);
+  }
+
+  @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     if (item.getItemId() == R.id.action_enable_rotation) {
-      item.setChecked(!item.isChecked());
-      mBezierDrawable.setDebugEnableRotation(item.isChecked());
+      mDebugRotation = !item.isChecked();
+      item.setChecked(mDebugRotation);
+      mBezierDrawable.setDebugEnableRotation(mDebugRotation);
       return true;
     }
     if (item.getItemId() == R.id.action_show_control_points) {
-      item.setChecked(!item.isChecked());
-      mBezierDrawable.setDebugShowControlPoints(item.isChecked());
+      mDebugCps = !item.isChecked();
+      item.setChecked(mDebugCps);
+      mBezierDrawable.setDebugShowControlPoints(mDebugCps);
       return true;
     }
     if (item.getItemId() == R.id.action_show_bounds) {
-      item.setChecked(!item.isChecked());
-      mBezierDrawable.setDebugShowBounds(item.isChecked());
+      mDebugBounds = !item.isChecked();
+      item.setChecked(mDebugBounds);
+      mBezierDrawable.setDebugShowBounds(mDebugBounds);
       return true;
     }
     if (item.getItemId() == R.id.action_slow_down_animation) {
-      item.setChecked(!item.isChecked());
-      mBezierDrawable.setDebugSlowDownAnimation(item.isChecked());
+      mDebugAnimation = !item.isChecked();
+      item.setChecked(mDebugAnimation);
+      mBezierDrawable.setDebugSlowDownAnimation(mDebugAnimation);
       return true;
     }
     return super.onOptionsItemSelected(item);

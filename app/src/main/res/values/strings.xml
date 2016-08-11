@@ -6,7 +6,7 @@
     <string name="check">Check</string>
     <string name="exclamation">Exclamation</string>
 
-    <string name="action_enable_rotation">Show rotation</string>
+    <string name="action_enable_rotation">Enable rotation</string>
     <string name="action_show_control_points">Show control points</string>
     <string name="action_show_bounds">Show bounds</string>
     <string name="action_slow_down_animation">Slow animation</string>

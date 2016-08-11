@@ -63,7 +63,8 @@ public class BezierDrawable extends Drawable {
   private final Paint mDebugControlPointsPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
   private final float mDebugControlPointRadius;
   private final float mDebugEndPointRadius;
-  private boolean mDebugShouldEnableRotation = true;
+
+  private boolean mDebugShouldEnableRotation;
   private boolean mDebugShouldShowControlPoints;
   private boolean mDebugShouldShowBounds;
   private boolean mDebugShouldSlowDownAnimation;
@@ -275,15 +276,16 @@ public class BezierDrawable extends Drawable {
   }
 
   private void drawDebugControlPoints(Canvas canvas) {
-    // Draw cp1s and cp2s.
     for (int i = 0; i < 3; i++) {
+      canvas.drawCircle(end(i, 0), end(i, 1), mDebugEndPointRadius, mDebugControlPointsPaint);
       canvas.drawCircle(cp1(i, 0), cp1(i, 1), mDebugControlPointRadius, mDebugControlPointsPaint);
       canvas.drawCircle(cp2(i, 0), cp2(i, 1), mDebugControlPointRadius, mDebugControlPointsPaint);
-    }
-
-    // Draw starting and ending points.
-    for (int i = 0; i < 4; i++) {
-      canvas.drawCircle(end(i, 0), end(i, 1), mDebugEndPointRadius, mDebugControlPointsPaint);
+      if (i + 1 == 3) {
+        canvas.drawCircle(end(i + 1, 0), end(i + 1, 1), mDebugEndPointRadius, mDebugControlPointsPaint);
+      }
+      canvas.drawLine(end(i, 0), end(i, 1), cp1(i, 0), cp1(i, 1), mDebugBoundsPaint);
+      canvas.drawLine(cp1(i, 0), cp1(i, 1), cp2(i, 0), cp2(i, 1), mDebugBoundsPaint);
+      canvas.drawLine(cp2(i, 0), cp2(i, 1), end(i + 1, 0), end(i + 1, 1), mDebugBoundsPaint);
     }
   }
 
@@ -329,7 +331,7 @@ public class BezierDrawable extends Drawable {
 
     long duration = ANIMATION_DURATION;
     if (mDebugShouldSlowDownAnimation) {
-      duration *= 10;
+      duration *= 7.5;
     }
 
     final int startBgColor = mBackgroundColor;
