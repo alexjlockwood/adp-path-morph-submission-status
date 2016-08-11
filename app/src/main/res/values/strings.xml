@@ -1,6 +1,6 @@
 <resources>
 
-    <string name="app_name">Bezier Icon Transformation</string>
+    <string name="app_name">Bezier Icon Transform</string>
 
     <string name="refresh">Refresh</string>
     <string name="check">Check</string>
@@ -10,5 +10,7 @@
     <string name="action_show_control_points">Show control points</string>
     <string name="action_show_bounds">Show bounds</string>
     <string name="action_slow_down_animation">Slow animation</string>
+
+    <string name="action_bar_subtitle">go/bezier-icon-transform-demo</string>
 
 </resources>

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="red">#C62828</color>
-    <color name="green">#2E7D32</color>
-    <color name="blue">#0277BD</color>
+
+    <color name="red">@color/quantum_vanillared500</color>
+    <color name="green">@color/quantum_vanillagreen500</color>
+    <color name="blue">@color/quantum_vanillablue500</color>
+
 </resources>

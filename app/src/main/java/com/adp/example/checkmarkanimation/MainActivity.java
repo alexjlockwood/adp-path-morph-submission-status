@@ -25,6 +25,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
+    getSupportActionBar().setSubtitle(R.string.action_bar_subtitle);
+
     mBezierDrawable = new BezierDrawable(this);
     mBezierDrawable.setIconType(BezierDrawable.REFRESH);
 
