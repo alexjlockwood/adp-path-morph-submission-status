@@ -19,17 +19,17 @@
         app:showAsAction="never"/>
 
     <item
-        android:id="@+id/action_show_bounds"
-        android:checkable="true"
-        android:checked="false"
-        android:title="@string/action_show_bounds"
-        app:showAsAction="never"/>
-
-    <item
         android:id="@+id/action_slow_down_animation"
         android:checkable="true"
         android:checked="false"
         android:title="@string/action_slow_down_animation"
+        app:showAsAction="never"/>
+    
+    <item
+        android:id="@+id/action_show_bounds"
+        android:checkable="true"
+        android:checked="false"
+        android:title="@string/action_show_bounds"
         app:showAsAction="never"/>
 
 </menu>
