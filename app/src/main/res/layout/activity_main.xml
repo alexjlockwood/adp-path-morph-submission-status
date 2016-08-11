@@ -15,7 +15,7 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <view class="com.adp.example.checkmarkanimation.MainActivity$SquareView"
+        <com.adp.example.checkmarkanimation.SquareView
             android:id="@+id/check_mark_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -25,8 +25,6 @@
     </RelativeLayout>
 
     <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -36,20 +34,20 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Refresh"/>
+            android:text="@string/refresh"/>
 
         <Button
             android:id="@+id/check"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Check"/>
+            android:text="@string/check"/>
 
         <Button
             android:id="@+id/exclamation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Exclamation"/>
+            android:text="@string/exclamation"/>
     </LinearLayout>
 </LinearLayout>
