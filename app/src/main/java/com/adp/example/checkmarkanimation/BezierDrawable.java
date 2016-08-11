@@ -70,9 +70,9 @@ public class BezierDrawable extends Drawable {
   private boolean mDebugShouldSlowDownAnimation;
 
   public BezierDrawable(Context ctx) {
-    mExclamationColor = ContextCompat.getColor(ctx, R.color.red);
-    mCheckColor = ContextCompat.getColor(ctx, R.color.green);
-    mRefreshColor = ContextCompat.getColor(ctx, R.color.blue);
+    mExclamationColor = ContextCompat.getColor(ctx, R.color.quantum_vanillared500);
+    mCheckColor = ContextCompat.getColor(ctx, R.color.quantum_vanillagreen500);
+    mRefreshColor = ContextCompat.getColor(ctx, R.color.quantum_vanillablue500);
     mStrokeWidth = ctx.getResources().getDimension(R.dimen.stroke_width);
     mPaint.setStrokeWidth(mStrokeWidth);
     setIconType(REFRESH);

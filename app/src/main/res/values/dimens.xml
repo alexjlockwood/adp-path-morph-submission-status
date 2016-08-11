@@ -1,8 +1,10 @@
 <resources>
+
     <dimen name="activity_horizontal_margin">8dp</dimen>
     <dimen name="activity_vertical_margin">8dp</dimen>
     <dimen name="stroke_width">10dp</dimen>
     <dimen name="debug_bounds_stroke_width">1dp</dimen>
     <dimen name="debug_control_point_radius">3dp</dimen>
     <dimen name="debug_end_point_radius">6dp</dimen>
+
 </resources>
