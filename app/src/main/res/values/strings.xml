@@ -8,7 +8,7 @@
 
     <string name="action_enable_rotation">Show rotation</string>
     <string name="action_show_control_points">Show control points</string>
-    <string name="action_show_bounds">Show debug bounds</string>
+    <string name="action_show_bounds">Show bounds</string>
     <string name="action_slow_down_animation">Slow animation</string>
 
 </resources>
