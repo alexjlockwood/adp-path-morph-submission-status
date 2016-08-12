@@ -31,6 +31,9 @@ public class BezierDrawable extends Drawable {
   public static final int EXCLAMATION = 2;
 
   private static final long ANIMATION_DURATION = 325;
+  private static final int DEBUG_SLOW_DURATION_FACTOR = 5;
+
+  private static final ArgbEvaluator ARGB_EVALUATOR = new ArgbEvaluator();
 
   private final Path mPath = new Path();
   private final Path mArrowHeadPath = new Path();
@@ -272,6 +275,7 @@ public class BezierDrawable extends Drawable {
   }
 
   private void drawDebugBounds(Canvas canvas) {
+    mDebugBoundsPaint.setColor(Color.BLACK);
     canvas.drawRect(mDrawBounds, mDebugBoundsPaint);
   }
 
@@ -331,7 +335,7 @@ public class BezierDrawable extends Drawable {
 
     long duration = ANIMATION_DURATION;
     if (mDebugShouldSlowDownAnimation) {
-      duration *= 7.5;
+      duration *= DEBUG_SLOW_DURATION_FACTOR;
     }
 
     final int startBgColor = mBackgroundColor;
@@ -340,11 +344,10 @@ public class BezierDrawable extends Drawable {
 
     final ValueAnimator anim = ValueAnimator.ofFloat(0, 1);
     anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-      private final ArgbEvaluator argbEvaluator = new ArgbEvaluator();
       @Override
       public void onAnimationUpdate(ValueAnimator animation) {
         final float newProgress = animation.getAnimatedFraction();
-        final int newBgColor = (Integer) argbEvaluator.evaluate(mProgress, startBgColor, endBgColor);
+        final int newBgColor = (Integer) ARGB_EVALUATOR.evaluate(mProgress, startBgColor, endBgColor);
         if (mProgress != newProgress || mBackgroundColor != newBgColor) {
           mProgress = newProgress;
           mBackgroundColor = newBgColor;
