@@ -1,6 +1,16 @@
 <resources>
-    <string name="app_name">Check Mark Animation</string>
 
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="app_name">Bezier Icon Transform</string>
+
+    <string name="refresh">Refresh</string>
+    <string name="check">Check</string>
+    <string name="exclamation">Exclamation</string>
+
+    <string name="action_enable_rotation">Enable rotation</string>
+    <string name="action_show_control_points">Show control points</string>
+    <string name="action_show_bounds">Show bounds</string>
+    <string name="action_slow_down_animation">Slow animation</string>
+
+    <string name="action_bar_subtitle">go/bezier-icon-transform-demo</string>
+
 </resources>
