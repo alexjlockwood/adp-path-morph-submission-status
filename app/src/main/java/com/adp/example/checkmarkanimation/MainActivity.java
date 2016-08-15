@@ -5,63 +5,46 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 
+/**
+ * Main activity for the sample app.
+ */
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-  private static final String STATE_DEBUG_ROTATION = "state_debug_rotation";
-  private static final String STATE_DEBUG_CPS = "state_debug_cps";
-  private static final String STATE_DEBUG_BOUNDS = "state_debug_bounds";
-  private static final String STATE_DEBUG_SLOW_ANIMATION = "state_debug_slow_animation;";
+  private static final String STATE_ENABLE_ROTATION = "state_debug_rotation";
+  private static final String STATE_SHOW_CPS = "state_debug_cps";
+  private static final String STATE_SLOW_ANIMATION = "state_debug_slow_animation;";
 
-  private boolean mDebugRotation = true;
-  private boolean mDebugCps;
-  private boolean mDebugBounds;
-  private boolean mDebugAnimation;
-
-  private BezierDrawable mBezierDrawable;
+  private SubmissionStatusDrawable mDrawable;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
 
+    //noinspection ConstantConditions
     getSupportActionBar().setSubtitle(R.string.action_bar_subtitle);
 
-    mBezierDrawable = new BezierDrawable(this);
-    mBezierDrawable.setIconType(BezierDrawable.REFRESH);
-
-    //noinspection deprecation
-    findViewById(R.id.check_mark_view).setBackgroundDrawable(mBezierDrawable);
-
-    final Button check = (Button) findViewById(R.id.check);
-    check.setOnClickListener(this);
-
-    final Button exclamation = (Button) findViewById(R.id.exclamation);
-    exclamation.setOnClickListener(this);
-
-    final Button refresh = (Button) findViewById(R.id.refresh);
-    refresh.setOnClickListener(this);
+    mDrawable = new SubmissionStatusDrawable(this);
 
     if (savedInstanceState != null) {
-      mDebugRotation = savedInstanceState.getBoolean(STATE_DEBUG_ROTATION);
-      mDebugCps = savedInstanceState.getBoolean(STATE_DEBUG_CPS);
-      mDebugBounds = savedInstanceState.getBoolean(STATE_DEBUG_BOUNDS);
-      mDebugAnimation = savedInstanceState.getBoolean(STATE_DEBUG_SLOW_ANIMATION);
+      mDrawable.setDebugEnableRotation(savedInstanceState.getBoolean(STATE_ENABLE_ROTATION));
+      mDrawable.setDebugShowControlPoints(savedInstanceState.getBoolean(STATE_SHOW_CPS));
+      mDrawable.setDebugSlowDownAnimation(savedInstanceState.getBoolean(STATE_SLOW_ANIMATION));
     }
 
-    mBezierDrawable.setDebugEnableRotation(mDebugRotation);
-    mBezierDrawable.setDebugShowControlPoints(mDebugCps);
-    mBezierDrawable.setDebugShowBounds(mDebugBounds);
-    mBezierDrawable.setDebugSlowDownAnimation(mDebugAnimation);
+    //noinspection deprecation
+    findViewById(R.id.submission_status_view).setBackgroundDrawable(mDrawable);
+    findViewById(R.id.returned).setOnClickListener(this);
+    findViewById(R.id.done).setOnClickListener(this);
+    findViewById(R.id.late).setOnClickListener(this);
   }
 
   @Override
   protected void onSaveInstanceState(Bundle outState) {
     super.onSaveInstanceState(outState);
-    outState.putBoolean(STATE_DEBUG_ROTATION, mDebugRotation);
-    outState.putBoolean(STATE_DEBUG_CPS, mDebugCps);
-    outState.putBoolean(STATE_DEBUG_BOUNDS, mDebugBounds);
-    outState.putBoolean(STATE_DEBUG_SLOW_ANIMATION, mDebugAnimation);
+    outState.putBoolean(STATE_ENABLE_ROTATION, mDrawable.getDebugEnableRotation());
+    outState.putBoolean(STATE_SHOW_CPS, mDrawable.getDebugShowControlPoints());
+    outState.putBoolean(STATE_SLOW_ANIMATION, mDrawable.getDebugSlowAnimation());
   }
 
   @Override
@@ -72,38 +55,27 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
   @Override
   public boolean onPrepareOptionsMenu(Menu menu) {
-    menu.findItem(R.id.action_enable_rotation).setChecked(mDebugRotation);
-    menu.findItem(R.id.action_show_control_points).setChecked(mDebugCps);
-    menu.findItem(R.id.action_show_bounds).setChecked(mDebugBounds);
-    menu.findItem(R.id.action_show_bounds).setVisible(false);
-    menu.findItem(R.id.action_slow_down_animation).setChecked(mDebugAnimation);
+    menu.findItem(R.id.action_enable_rotation).setChecked(mDrawable.getDebugEnableRotation());
+    menu.findItem(R.id.action_show_cps).setChecked(mDrawable.getDebugShowControlPoints());
+    menu.findItem(R.id.action_slow_animation).setChecked(mDrawable.getDebugSlowAnimation());
     return super.onPrepareOptionsMenu(menu);
   }
 
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
+    if (item.isCheckable()) {
+      item.setChecked(!item.isChecked());
+    }
     if (item.getItemId() == R.id.action_enable_rotation) {
-      mDebugRotation = !item.isChecked();
-      item.setChecked(mDebugRotation);
-      mBezierDrawable.setDebugEnableRotation(mDebugRotation);
+      mDrawable.setDebugEnableRotation(item.isChecked());
       return true;
     }
-    if (item.getItemId() == R.id.action_show_control_points) {
-      mDebugCps = !item.isChecked();
-      item.setChecked(mDebugCps);
-      mBezierDrawable.setDebugShowControlPoints(mDebugCps);
+    if (item.getItemId() == R.id.action_show_cps) {
+      mDrawable.setDebugShowControlPoints(item.isChecked());
       return true;
     }
-    if (item.getItemId() == R.id.action_show_bounds) {
-      mDebugBounds = !item.isChecked();
-      item.setChecked(mDebugBounds);
-      mBezierDrawable.setDebugShowBounds(mDebugBounds);
-      return true;
-    }
-    if (item.getItemId() == R.id.action_slow_down_animation) {
-      mDebugAnimation = !item.isChecked();
-      item.setChecked(mDebugAnimation);
-      mBezierDrawable.setDebugSlowDownAnimation(mDebugAnimation);
+    if (item.getItemId() == R.id.action_slow_animation) {
+      mDrawable.setDebugSlowDownAnimation(item.isChecked());
       return true;
     }
     return super.onOptionsItemSelected(item);
@@ -112,14 +84,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
   @Override
   public void onClick(View v) {
     switch (v.getId()) {
-      case R.id.check:
-        mBezierDrawable.animateTo(BezierDrawable.CHECK);
+      case R.id.done:
+        mDrawable.animateTo(SubmissionStatusDrawable.DONE);
         break;
-      case R.id.exclamation:
-        mBezierDrawable.animateTo(BezierDrawable.EXCLAMATION);
+      case R.id.late:
+        mDrawable.animateTo(SubmissionStatusDrawable.LATE);
         break;
-      case R.id.refresh:
-        mBezierDrawable.animateTo(BezierDrawable.REFRESH);
+      case R.id.returned:
+        mDrawable.animateTo(SubmissionStatusDrawable.RETURNED);
         break;
     }
   }

@@ -1,16 +1,15 @@
 <resources>
 
-    <string name="app_name">Lunchbox Icon Animation</string>
+    <string name="app_name">Submission Status Icon Demo</string>
 
-    <string name="refresh">Returned</string>
-    <string name="check">Done</string>
-    <string name="exclamation">Late</string>
+    <string name="returned">Returned</string>
+    <string name="done">Done</string>
+    <string name="late">Late</string>
 
     <string name="action_enable_rotation">Enable rotation</string>
     <string name="action_show_control_points">Show control points</string>
-    <string name="action_show_bounds">Show bounds</string>
-    <string name="action_slow_down_animation">Slow animation</string>
+    <string name="action_slow_animation">Slow animation</string>
 
-    <string name="action_bar_subtitle">go/lunchbox-icon-animation</string>
+    <string name="action_bar_subtitle">go/submission-status-icon-demo</string>
 
 </resources>

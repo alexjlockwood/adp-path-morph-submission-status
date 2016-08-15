@@ -16,7 +16,7 @@
         android:layout_weight="1">
 
         <com.adp.example.checkmarkanimation.SquareView
-            android:id="@+id/check_mark_view"
+            android:id="@+id/submission_status_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_centerInParent="true"
@@ -31,28 +31,28 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/refresh"
+            android:id="@+id/returned"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/activity_vertical_margin"
             android:layout_weight="1"
             android:clipToPadding="false"
-            android:text="@string/refresh"/>
+            android:text="@string/returned"/>
 
         <Button
-            android:id="@+id/check"
+            android:id="@+id/done"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/activity_vertical_margin"
             android:layout_weight="1"
-            android:text="@string/check"/>
+            android:text="@string/done"/>
 
         <Button
-            android:id="@+id/exclamation"
+            android:id="@+id/late"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/activity_vertical_margin"
             android:layout_weight="1"
-            android:text="@string/exclamation"/>
+            android:text="@string/late"/>
     </LinearLayout>
 </LinearLayout>
