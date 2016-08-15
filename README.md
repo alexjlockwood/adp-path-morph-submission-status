@@ -1,3 +1,3 @@
 # material-submission-status-icon-demo
 
-![Material exclamation mark to check mark animation](http://i.imgur.com/zVkc5lg.gif)
+<img alt="Material exclamation mark to check mark animation" src="http://i.imgur.com/zVkc5lg.gif" width="336px" height="600px" />
