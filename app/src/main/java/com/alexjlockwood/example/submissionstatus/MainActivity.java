@@ -1,4 +1,4 @@
-package com.adp.example.checkmarkanimation;
+package com.alexjlockwood.example.submissionstatus;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;

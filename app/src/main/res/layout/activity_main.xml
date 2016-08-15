@@ -15,7 +15,7 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
-        <com.adp.example.checkmarkanimation.SquareView
+        <com.alexjlockwood.example.submissionstatus.SquareView
             android:id="@+id/submission_status_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

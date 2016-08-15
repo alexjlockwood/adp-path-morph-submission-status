@@ -1,4 +1,4 @@
-package com.adp.example.checkmarkanimation;
+package com.alexjlockwood.example.submissionstatus;
 
 /**
  * Utility class for math-related methods.

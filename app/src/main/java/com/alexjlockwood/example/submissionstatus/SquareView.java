@@ -1,4 +1,4 @@
-package com.adp.example.checkmarkanimation;
+package com.alexjlockwood.example.submissionstatus;
 
 import android.content.Context;
 import android.util.AttributeSet;
