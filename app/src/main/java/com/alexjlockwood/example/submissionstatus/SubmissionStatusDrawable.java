@@ -127,7 +127,7 @@ public class SubmissionStatusDrawable extends Drawable {
     setIconType(RETURNED);
   }
 
-    /* Public API (setting the icon type with and without animation). */
+  /* Public API (setting the icon type with and without animation). */
 
   /** Sets a new icon state without playing an animation. */
   public void setIconType(@IconType int iconType) {
