@@ -1,5 +1,7 @@
 package com.alexjlockwood.example.submissionstatus;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ArgbEvaluator;
 import android.animation.ValueAnimator;
 import android.content.Context;
@@ -76,6 +78,7 @@ public class SubmissionStatusDrawable extends Drawable {
 
   // The current progress of the animation.
   @FloatRange(from = 0f, to = 1f) private float mProgress;
+  private ValueAnimator currentAnimator;
 
   // A three dimensional array holding the end points for the icon's bezier curves.
   // This can be thought of as a 3-slot array of 4x2 two-dimensional arrays. The three slots
@@ -116,6 +119,7 @@ public class SubmissionStatusDrawable extends Drawable {
     mReturnedColor = ContextCompat.getColor(ctx, R.color.quantum_vanillablue500);
     mDoneColor = ContextCompat.getColor(ctx, R.color.quantum_vanillagreen500);
     mLateColor = ContextCompat.getColor(ctx, R.color.quantum_vanillared500);
+    mBackgroundColor = mReturnedColor;
 
     // Debugging stuff.
     mDebugControlPointRadius = res.getDimension(R.dimen.debug_control_point_radius);
@@ -123,19 +127,15 @@ public class SubmissionStatusDrawable extends Drawable {
     mDebugAnimationDuration = ANIMATION_DURATION * 5;
     mDebugStrokeWidth = res.getDimension(R.dimen.debug_bounds_stroke_width);
     mDebugStrokeColor = Color.BLACK;
-
-    setIconType(RETURNED);
   }
 
   /* Public API (setting the icon type with and without animation). */
 
-  /** Sets a new icon state without playing an animation. */
+  /** Sets the new icon state. */
   public void setIconType(@IconType int iconType) {
-    mCurrIconType = iconType;
-    mPrevIconType = iconType;
-    mProgress = 1f;
-    mBackgroundColor = getIconBackgroundColor(iconType);
-    invalidateSelf();
+    if (iconType != mCurrIconType) {
+      startAnimation(iconType);
+    }
   }
 
   /** Returns the current icon state. */
@@ -144,16 +144,12 @@ public class SubmissionStatusDrawable extends Drawable {
     return mCurrIconType;
   }
 
-  /** Animates to a new icon state. */
-  public void animateTo(@IconType int iconType) {
-    if (iconType != mCurrIconType) {
-      startAnimation(iconType);
-    }
-  }
-
   private void startAnimation(@IconType final int nextIconType) {
     if (nextIconType == mCurrIconType) {
       return;
+    }
+    if (currentAnimator != null && currentAnimator.isRunning()) {
+      currentAnimator.cancel();
     }
 
     mPrevIconType = mCurrIconType;
@@ -162,8 +158,8 @@ public class SubmissionStatusDrawable extends Drawable {
     final int startBgColor = mBackgroundColor;
     final int endBgColor = getIconBackgroundColor(nextIconType);
 
-    final ValueAnimator anim = ValueAnimator.ofFloat(0, 1);
-    anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+    currentAnimator = ValueAnimator.ofFloat(0, 1);
+    currentAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
       @Override
       public void onAnimationUpdate(ValueAnimator animation) {
         final float newProgress = animation.getAnimatedFraction();
@@ -176,9 +172,19 @@ public class SubmissionStatusDrawable extends Drawable {
         }
       }
     });
-    anim.setDuration(mDebugShouldSlowDownAnimation ? mDebugAnimationDuration : ANIMATION_DURATION);
-    anim.setInterpolator(new DecelerateInterpolator());
-    anim.start();
+    currentAnimator.addListener(new AnimatorListenerAdapter() {
+      @Override
+      public void onAnimationEnd(Animator animator) {
+        mBackgroundColor = endBgColor;
+        mProgress = 1f;
+        if (currentAnimator == animator) {
+          currentAnimator = null;
+        }
+      }
+    });
+    currentAnimator.setDuration(mDebugShouldSlowDownAnimation ? mDebugAnimationDuration : ANIMATION_DURATION);
+    currentAnimator.setInterpolator(new DecelerateInterpolator());
+    currentAnimator.start();
   }
 
   @ColorInt
@@ -360,13 +366,14 @@ public class SubmissionStatusDrawable extends Drawable {
   }
 
   /*
-  * Linear interpolation helper methods. Each method takes an integer argument which serves
-  * as an index into a two-dimensional array of (x, y) coordinates. For example, cp2x(0) fetches
-  * the x coordinate for the second control point for the icon's first bezier curve. Similarly,
-  * endy(3) fetches the y coordinate for the icon's fourth end point. Simple enough, right? The
-  * returned value is linearly interpolated based on the animation's progress from mPrevIconType
-  * to mCurrIconType.
-  */
+   * Linear interpolation helper methods. Each method takes an integer argument which serves
+   * as an index into a two-dimensional array of (x, y) coordinates. For example, cp2x(0) fetches
+   * the x coordinate for the second control point for the icon's first bezier curve. Similarly,
+   * endy(3) fetches the y coordinate for the icon's fourth end point. Simple enough, right? The
+   * returned value is linearly interpolated based on the animation's progress from mPrevIconType
+   * to mCurrIconType, and the current progress of the animation is determined by the interpolator
+   * set on the Animator.
+   */
 
   private float cp1x(@IntRange(from = 0, to = 2) int i) {
     return lerpx(mControlPoints1, i);
@@ -417,6 +424,24 @@ public class SubmissionStatusDrawable extends Drawable {
   }
 
   /* Overridden Drawable methods. */
+
+  @Override
+  public final boolean setVisible(boolean visible, boolean restart) {
+    final boolean changed = super.setVisible(visible, restart);
+    if (changed) {
+      jumpToCurrentState();
+    }
+    return changed;
+  }
+
+  @Override
+  public final void jumpToCurrentState() {
+    super.jumpToCurrentState();
+    if (currentAnimator != null) {
+      currentAnimator.end();
+      currentAnimator = null;
+    }
+  }
 
   @Override
   public void setAlpha(int alpha) {

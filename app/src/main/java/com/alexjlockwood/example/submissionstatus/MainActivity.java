@@ -13,6 +13,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
   private static final String STATE_ENABLE_ROTATION = "state_debug_rotation";
   private static final String STATE_SHOW_CPS = "state_debug_cps";
   private static final String STATE_SLOW_ANIMATION = "state_debug_slow_animation;";
+  private static final String STATE_ICON_TYPE = "state_icon_type";
 
   private SubmissionStatusDrawable mDrawable;
 
@@ -27,6 +28,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     mDrawable = new SubmissionStatusDrawable(this);
 
     if (savedInstanceState != null) {
+      //noinspection WrongConstant
+      mDrawable.setIconType(savedInstanceState.getInt(STATE_ICON_TYPE));
       mDrawable.setDebugEnableRotation(savedInstanceState.getBoolean(STATE_ENABLE_ROTATION));
       mDrawable.setDebugShowControlPoints(savedInstanceState.getBoolean(STATE_SHOW_CPS));
       mDrawable.setDebugSlowDownAnimation(savedInstanceState.getBoolean(STATE_SLOW_ANIMATION));
@@ -45,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     outState.putBoolean(STATE_ENABLE_ROTATION, mDrawable.getDebugEnableRotation());
     outState.putBoolean(STATE_SHOW_CPS, mDrawable.getDebugShowControlPoints());
     outState.putBoolean(STATE_SLOW_ANIMATION, mDrawable.getDebugSlowAnimation());
+    outState.putInt(STATE_ICON_TYPE, mDrawable.getIconType());
   }
 
   @Override
@@ -85,13 +89,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
   public void onClick(View v) {
     switch (v.getId()) {
       case R.id.done:
-        mDrawable.animateTo(SubmissionStatusDrawable.DONE);
+        mDrawable.setIconType(SubmissionStatusDrawable.DONE);
         break;
       case R.id.late:
-        mDrawable.animateTo(SubmissionStatusDrawable.LATE);
+        mDrawable.setIconType(SubmissionStatusDrawable.LATE);
         break;
       case R.id.returned:
-        mDrawable.animateTo(SubmissionStatusDrawable.RETURNED);
+        mDrawable.setIconType(SubmissionStatusDrawable.RETURNED);
         break;
     }
   }
