@@ -12,7 +12,7 @@
     <string name="path_exclamation_second">M410.121948,289.817078 C410.121948,340.853638 410.121948,391.890259 410.121948,442.926819</string>
     <string name="path_exclamation_third">M410.121948,442.926819 C410.121948,493.963379 410.121948,545 410.121948,596.036560</string>
 
-    <string name="path_refresh_arrow">M0,530.365479 L-70,409.121948 70,409.121948 z</string>
+    <string name="path_refresh_arrow">M0,530.365479 L-70,410.121948 70,410.121948 z</string>
     <string name="path_refresh_dot">M410.121948,820.243896 L410.121948,820.243896 410.121948,820.243896 410.121948,820.243896 z</string>
 
     <string name="path_check_arrow">M74.169708,174.885651 L74.169708,174.885651 74.169708,174.885651 z</string>

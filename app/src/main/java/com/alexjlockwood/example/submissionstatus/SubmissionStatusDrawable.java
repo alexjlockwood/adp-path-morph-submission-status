@@ -19,6 +19,7 @@ import android.support.annotation.ColorInt;
 import android.support.annotation.FloatRange;
 import android.support.annotation.IntDef;
 import android.support.annotation.IntRange;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.animation.DecelerateInterpolator;
@@ -283,7 +284,7 @@ public class SubmissionStatusDrawable extends Drawable {
     final float arrowHeadHeight = arrowHeadSize * MathUtils.cos(30);
     final float returnedEndX = mEndPoints[0][0][0];
     // Subtract one pixel to ensure arrow head and returned arc connect.
-    final float returnedEndY = mEndPoints[0][0][1] - 1;
+    final float returnedEndY = mEndPoints[0][0][1];
 
     mArrowHeadPoints = new float[][][]{
         {
@@ -297,7 +298,7 @@ public class SubmissionStatusDrawable extends Drawable {
   }
 
   @Override
-  public void draw(Canvas canvas) {
+  public void draw(@NonNull Canvas canvas) {
     Log.i("SubmissionStatus", "====================");
     Log.i("SubmissionStatus", getBounds().toShortString());
     Log.i("SubmissionStatus", mDrawBounds.toShortString());
