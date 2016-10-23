@@ -1,0 +1,20 @@
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+    <objectAnimator
+        android:duration="@integer/animation_duration"
+        android:interpolator="@android:interpolator/decelerate_quad"
+        android:propertyName="rotation"
+        android:valueFrom="90"
+        android:valueTo="-360"/>
+    <objectAnimator
+        android:duration="@integer/animation_duration"
+        android:interpolator="@android:interpolator/decelerate_quad"
+        android:propertyName="translateX"
+        android:valueFrom="-33.63009"
+        android:valueTo="0"/>
+    <objectAnimator
+        android:duration="@integer/animation_duration"
+        android:interpolator="@android:interpolator/decelerate_quad"
+        android:propertyName="translateY"
+        android:valueFrom="117.61815"
+        android:valueTo="0"/>
+</set>

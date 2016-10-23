@@ -4,63 +4,42 @@
     xmlns:aapt="http://schemas.android.com/aapt"
     android:drawable="@drawable/ic_check">
 
-    <target android:name="rotationGroup">
-        <aapt:attr name="android:animation">
-            <set>
-                <objectAnimator
-                    android:duration="@integer/animation_duration"
-                    android:interpolator="@android:interpolator/decelerate_quad"
-                    android:propertyName="rotation"
-                    android:valueFrom="90"
-                    android:valueTo="-360"/>
-                <objectAnimator
-                    android:duration="@integer/animation_duration"
-                    android:interpolator="@android:interpolator/decelerate_quad"
-                    android:propertyName="translateX"
-                    android:valueFrom="-33.63009"
-                    android:valueTo="0"/>
-                <objectAnimator
-                    android:duration="@integer/animation_duration"
-                    android:interpolator="@android:interpolator/decelerate_quad"
-                    android:propertyName="translateY"
-                    android:valueFrom="117.61815"
-                    android:valueTo="0"/>
-            </set>
-        </aapt:attr>
-    </target>
+    <target
+        android:name="rotationGroup"
+        android:animation="@animator/rotation_from_check"/>
 
-    <target android:name="first">
+    <target android:name="bezier1">
         <aapt:attr name="android:animation">
             <objectAnimator
                 android:duration="@integer/animation_duration"
                 android:interpolator="@android:interpolator/decelerate_quad"
                 android:propertyName="pathData"
-                android:valueFrom="@string/path_check_first"
-                android:valueTo="@string/path_refresh_first"
+                android:valueFrom="@string/path_check_bezier1"
+                android:valueTo="@string/path_refresh_bezier1"
                 android:valueType="pathType"/>
         </aapt:attr>
     </target>
 
-    <target android:name="second">
+    <target android:name="bezier2">
         <aapt:attr name="android:animation">
             <objectAnimator
                 android:duration="@integer/animation_duration"
                 android:interpolator="@android:interpolator/decelerate_quad"
                 android:propertyName="pathData"
-                android:valueFrom="@string/path_check_second"
-                android:valueTo="@string/path_refresh_second"
+                android:valueFrom="@string/path_check_bezier2"
+                android:valueTo="@string/path_refresh_bezier2"
                 android:valueType="pathType"/>
         </aapt:attr>
     </target>
 
-    <target android:name="third">
+    <target android:name="bezier3">
         <aapt:attr name="android:animation">
             <objectAnimator
                 android:duration="@integer/animation_duration"
                 android:interpolator="@android:interpolator/decelerate_quad"
                 android:propertyName="pathData"
-                android:valueFrom="@string/path_check_third"
-                android:valueTo="@string/path_refresh_third"
+                android:valueFrom="@string/path_check_bezier3"
+                android:valueTo="@string/path_refresh_bezier3"
                 android:valueType="pathType"/>
         </aapt:attr>
     </target>

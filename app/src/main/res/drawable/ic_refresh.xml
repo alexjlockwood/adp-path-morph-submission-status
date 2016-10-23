@@ -7,7 +7,6 @@
     android:viewportWidth="1160">
 
     <group
-        android:name="insetsGroup"
         android:translateX="169.87805"
         android:translateY="169.87805">
 
@@ -17,20 +16,20 @@
             android:pivotY="410.12195">
 
             <path
-                android:name="first"
-                android:pathData="@string/path_refresh_first"
+                android:name="bezier1"
+                android:pathData="@string/path_refresh_bezier1"
                 android:strokeColor="?attr/colorControlNormal"
                 android:strokeWidth="35"/>
 
             <path
-                android:name="second"
-                android:pathData="@string/path_refresh_second"
+                android:name="bezier2"
+                android:pathData="@string/path_refresh_bezier2"
                 android:strokeColor="?attr/colorControlNormal"
                 android:strokeWidth="35"/>
 
             <path
-                android:name="third"
-                android:pathData="@string/path_refresh_third"
+                android:name="bezier3"
+                android:pathData="@string/path_refresh_bezier3"
                 android:strokeColor="?attr/colorControlNormal"
                 android:strokeWidth="35"/>
 
