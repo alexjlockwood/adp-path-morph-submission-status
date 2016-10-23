@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportHeight="1160"
+    android:viewportWidth="1160">
+
+    <group
+        android:name="insetsGroup"
+        android:translateX="169.87805"
+        android:translateY="169.87805">
+
+        <group
+            android:name="rotationGroup"
+            android:pivotX="410.12195"
+            android:pivotY="410.12195">
+
+            <path
+                android:name="first"
+                android:pathData="@string/path_exclamation_first"
+                android:strokeColor="?attr/colorControlNormal"
+                android:strokeWidth="35"/>
+
+            <path
+                android:name="second"
+                android:pathData="@string/path_exclamation_second"
+                android:strokeColor="?attr/colorControlNormal"
+                android:strokeWidth="35"/>
+
+            <path
+                android:name="third"
+                android:pathData="@string/path_exclamation_third"
+                android:strokeColor="?attr/colorControlNormal"
+                android:strokeWidth="35"/>
+
+            <path
+                android:name="arrow"
+                android:pathData="@string/path_exclamation_arrow"
+                android:fillColor="?attr/colorControlNormal"/>
+
+            <path
+                android:name="dot"
+                android:pathData="@string/path_exclamation_dot"
+                android:fillColor="?attr/colorControlNormal"/>
+
+        </group>
+
+    </group>
+
+</vector>

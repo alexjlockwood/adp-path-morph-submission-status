@@ -1,0 +1,5 @@
+<resources>
+
+    <integer name="animation_duration">325</integer>
+
+</resources>

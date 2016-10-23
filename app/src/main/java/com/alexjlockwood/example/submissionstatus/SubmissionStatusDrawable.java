@@ -20,6 +20,7 @@ import android.support.annotation.FloatRange;
 import android.support.annotation.IntDef;
 import android.support.annotation.IntRange;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.animation.DecelerateInterpolator;
 
 import java.lang.annotation.Retention;
@@ -297,6 +298,12 @@ public class SubmissionStatusDrawable extends Drawable {
 
   @Override
   public void draw(Canvas canvas) {
+    Log.i("SubmissionStatus", "====================");
+    Log.i("SubmissionStatus", getBounds().toShortString());
+    Log.i("SubmissionStatus", mDrawBounds.toShortString());
+    Log.i("SubmissionStatus", "" + mInsets);
+    Log.i("SubmissionStatus", "" + mProgress);
+    Log.i("SubmissionStatus", "" + mIconStrokeWidth);
     mPaint.setStrokeWidth(mIconStrokeWidth);
     mPaint.setColor(mBackgroundColor);
     mPaint.setStyle(Paint.Style.FILL);
@@ -313,6 +320,7 @@ public class SubmissionStatusDrawable extends Drawable {
     if (animatingFromDone || animatingToDone) {
       // Ensure the check icon is properly centered.
       final float progress = animatingToDone ? mProgress : 1 - mProgress;
+      Log.i("SubmissionStatus", MathUtils.lerp(0, -(r / 2 * COS55 - r / 4 * COS35), progress) + "," + MathUtils.lerp(0, r / 2 * COS55, progress));
       canvas.translate(
           MathUtils.lerp(0, -(r / 2 * COS55 - r / 4 * COS35), progress),
           MathUtils.lerp(0, r / 2 * COS55, progress));
@@ -335,6 +343,7 @@ public class SubmissionStatusDrawable extends Drawable {
     mPaint.setColor(mIconColor);
     mPaint.setStyle(Paint.Style.FILL);
     canvas.drawPath(mArrowHeadPath, mPaint);
+    logArrow();
 
     // Draw the exclamation dot displayed by the late icon.
     mExclamationDotPath.rewind();
@@ -346,6 +355,7 @@ public class SubmissionStatusDrawable extends Drawable {
     mPaint.setColor(mIconColor);
     mPaint.setStyle(Paint.Style.FILL);
     canvas.drawPath(mExclamationDotPath, mPaint);
+    logDot();
 
     // Draw the three cubic bezier curves to form the main icon.
     mIconPath.rewind();
@@ -353,6 +363,9 @@ public class SubmissionStatusDrawable extends Drawable {
     mIconPath.cubicTo(cp1x(0), cp1y(0), cp2x(0), cp2y(0), endx(1), endy(1));
     mIconPath.cubicTo(cp1x(1), cp1y(1), cp2x(1), cp2y(1), endx(2), endy(2));
     mIconPath.cubicTo(cp1x(2), cp1y(2), cp2x(2), cp2y(2), endx(3), endy(3));
+    log(0);
+    log(1);
+    log(2);
     mPaint.setColor(mIconColor);
     mPaint.setStyle(Paint.Style.STROKE);
     canvas.drawPath(mIconPath, mPaint);
@@ -360,6 +373,18 @@ public class SubmissionStatusDrawable extends Drawable {
     maybeDrawDebugControlPoints(canvas);
 
     canvas.restore();
+  }
+
+  private void log(int i) {
+    Log.i("SubmissionStatus", String.format("M%f,%f C%f,%f %f,%f %f,%f", endx(i), endy(i), cp1x(i), cp1y(i), cp2x(i), cp2y(i), endx(i+1), endy(i+1)));
+  }
+
+  private void logArrow() {
+    Log.i("SubmissionStatus", String.format("M%f,%f l%f,%f %f,%f z", arrowx(0), arrowy(0), arrowx(1), arrowy(1), arrowx(2), arrowy(2)));
+  }
+
+  private void logDot() {
+    Log.i("SubmissionStatus", String.format("M%f,%f l%f,%f %f,%f %f,%f z", dotx(0), doty(0), dotx(1), doty(1), dotx(2), doty(2), dotx(3), doty(3)));
   }
 
   /*

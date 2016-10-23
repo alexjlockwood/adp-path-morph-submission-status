@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:drawable="@drawable/ic_check">
+
+    <target android:name="rotationGroup">
+        <aapt:attr name="android:animation">
+            <set>
+                <objectAnimator
+                    android:duration="@integer/animation_duration"
+                    android:interpolator="@android:interpolator/decelerate_quad"
+                    android:propertyName="rotation"
+                    android:valueFrom="90"
+                    android:valueTo="-360"/>
+                <objectAnimator
+                    android:duration="@integer/animation_duration"
+                    android:interpolator="@android:interpolator/decelerate_quad"
+                    android:propertyName="translateX"
+                    android:valueFrom="-33.63009"
+                    android:valueTo="0"/>
+                <objectAnimator
+                    android:duration="@integer/animation_duration"
+                    android:interpolator="@android:interpolator/decelerate_quad"
+                    android:propertyName="translateY"
+                    android:valueFrom="117.61815"
+                    android:valueTo="0"/>
+            </set>
+        </aapt:attr>
+    </target>
+
+    <target android:name="first">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:duration="@integer/animation_duration"
+                android:interpolator="@android:interpolator/decelerate_quad"
+                android:propertyName="pathData"
+                android:valueFrom="@string/path_check_first"
+                android:valueTo="@string/path_exclamation_first"
+                android:valueType="pathType"/>
+        </aapt:attr>
+    </target>
+
+    <target android:name="second">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:duration="@integer/animation_duration"
+                android:interpolator="@android:interpolator/decelerate_quad"
+                android:propertyName="pathData"
+                android:valueFrom="@string/path_check_second"
+                android:valueTo="@string/path_exclamation_second"
+                android:valueType="pathType"/>
+        </aapt:attr>
+    </target>
+
+    <target android:name="third">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:duration="@integer/animation_duration"
+                android:interpolator="@android:interpolator/decelerate_quad"
+                android:propertyName="pathData"
+                android:valueFrom="@string/path_check_third"
+                android:valueTo="@string/path_exclamation_third"
+                android:valueType="pathType"/>
+        </aapt:attr>
+    </target>
+
+    <target android:name="arrow">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:duration="@integer/animation_duration"
+                android:interpolator="@android:interpolator/decelerate_quad"
+                android:propertyName="pathData"
+                android:valueFrom="@string/path_check_arrow"
+                android:valueTo="@string/path_exclamation_arrow"
+                android:valueType="pathType"/>
+        </aapt:attr>
+    </target>
+
+    <target android:name="dot">
+        <aapt:attr name="android:animation">
+            <objectAnimator
+                android:duration="@integer/animation_duration"
+                android:interpolator="@android:interpolator/decelerate_quad"
+                android:propertyName="pathData"
+                android:valueFrom="@string/path_check_dot"
+                android:valueTo="@string/path_exclamation_dot"
+                android:valueType="pathType"/>
+        </aapt:attr>
+    </target>
+
+</animated-vector>

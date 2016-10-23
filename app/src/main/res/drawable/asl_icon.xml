@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-selector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/check"
+        android:drawable="@drawable/ic_check"
+        app:state_check="true"/>
+
+    <item
+        android:id="@+id/exclamation"
+        android:drawable="@drawable/ic_exclamation"
+        app:state_exclamation="true"/>
+
+    <item
+        android:id="@+id/refresh"
+        android:drawable="@drawable/ic_refresh"/>
+
+    <transition
+        android:drawable="@drawable/avd_refresh_to_check"
+        android:fromId="@id/refresh"
+        android:toId="@id/check"/>
+
+    <transition
+        android:drawable="@drawable/avd_check_to_refresh"
+        android:fromId="@id/check"
+        android:toId="@id/refresh"/>
+
+    <transition
+        android:drawable="@drawable/avd_check_to_exclamation"
+        android:fromId="@id/check"
+        android:toId="@id/exclamation"/>
+
+    <transition
+        android:drawable="@drawable/avd_exclamation_to_check"
+        android:fromId="@id/exclamation"
+        android:toId="@id/check"/>
+
+    <transition
+        android:drawable="@drawable/avd_refresh_to_exclamation"
+        android:fromId="@id/refresh"
+        android:toId="@id/exclamation"/>
+
+    <transition
+        android:drawable="@drawable/avd_exclamation_to_refresh"
+        android:fromId="@id/exclamation"
+        android:toId="@id/refresh"/>
+
+</animated-selector>

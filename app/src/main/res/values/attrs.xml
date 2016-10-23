@@ -1,0 +1,7 @@
+<resources>
+    <declare-styleable name="IconState">
+        <attr name="state_check" format="boolean"/>
+        <attr name="state_exclamation" format="boolean"/>
+        <attr name="state_refresh" format="boolean"/>
+    </declare-styleable>
+</resources>
