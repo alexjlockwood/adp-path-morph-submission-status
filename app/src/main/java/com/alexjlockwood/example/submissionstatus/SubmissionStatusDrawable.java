@@ -159,17 +159,14 @@ public class SubmissionStatusDrawable extends Drawable {
     final int endBgColor = getIconBackgroundColor(nextIconType);
 
     currentAnimator = ValueAnimator.ofFloat(0, 1);
-    currentAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-      @Override
-      public void onAnimationUpdate(ValueAnimator animation) {
-        final float newProgress = animation.getAnimatedFraction();
-        final int newBgColor =
-            (Integer) ARGB_EVALUATOR.evaluate(mProgress, startBgColor, endBgColor);
-        if (mProgress != newProgress || mBackgroundColor != newBgColor) {
-          mProgress = newProgress;
-          mBackgroundColor = newBgColor;
-          invalidateSelf();
-        }
+    currentAnimator.addUpdateListener(animation -> {
+      final float newProgress = animation.getAnimatedFraction();
+      final int newBgColor =
+          (Integer) ARGB_EVALUATOR.evaluate(mProgress, startBgColor, endBgColor);
+      if (mProgress != newProgress || mBackgroundColor != newBgColor) {
+        mProgress = newProgress;
+        mBackgroundColor = newBgColor;
+        invalidateSelf();
       }
     });
     currentAnimator.addListener(new AnimatorListenerAdapter() {
