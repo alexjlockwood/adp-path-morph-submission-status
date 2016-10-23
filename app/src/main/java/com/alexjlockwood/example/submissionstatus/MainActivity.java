@@ -15,7 +15,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
   private static final String STATE_SLOW_ANIMATION = "state_debug_slow_animation;";
   private static final String STATE_ICON_TYPE = "state_icon_type";
 
-  private SquareImageView squareImageView;
+  private IconImageView iconImageView;
   private SubmissionStatusDrawable mDrawable;
 
   @Override
@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     findViewById(R.id.done).setOnClickListener(this);
     findViewById(R.id.late).setOnClickListener(this);
 
-    squareImageView = (SquareImageView) findViewById(R.id.imageview);
+    iconImageView = (IconImageView) findViewById(R.id.imageview);
   }
 
   @Override
@@ -93,15 +93,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     switch (v.getId()) {
       case R.id.done:
         mDrawable.setIconType(SubmissionStatusDrawable.DONE);
-        squareImageView.setIconType(SquareImageView.IconType.CHECK);
+        iconImageView.setIconType(IconImageView.IconType.CHECK);
         break;
       case R.id.late:
         mDrawable.setIconType(SubmissionStatusDrawable.LATE);
-        squareImageView.setIconType(SquareImageView.IconType.EXCLAMATION);
+        iconImageView.setIconType(IconImageView.IconType.EXCLAMATION);
         break;
       case R.id.returned:
         mDrawable.setIconType(SubmissionStatusDrawable.RETURNED);
-        squareImageView.setIconType(SquareImageView.IconType.REFRESH);
+        iconImageView.setIconType(IconImageView.IconType.REFRESH);
         break;
     }
   }

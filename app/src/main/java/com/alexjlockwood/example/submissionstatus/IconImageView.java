@@ -8,7 +8,7 @@ import android.util.AttributeSet;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-class SquareImageView extends AppCompatImageView {
+class IconImageView extends AppCompatImageView {
   private static final int[] CHECK_STATE_SET =
       {R.attr.state_check, -R.attr.state_refresh, -R.attr.state_exclamation};
   private static final int[] EXCLAMATION_STATE_SET =
@@ -19,7 +19,7 @@ class SquareImageView extends AppCompatImageView {
   @IconType
   private int iconType;
 
-  public SquareImageView(Context context, AttributeSet attrs) {
+  public IconImageView(Context context, AttributeSet attrs) {
     super(context, attrs);
   }
 
